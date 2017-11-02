@@ -1,19 +1,25 @@
 import * as React from 'react';
 import YouTubeAuth from './components/YouTubeAuth';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import './App.css';
 
-const logo = require('./logo.svg');
+import NavBar from './components/NavBar';
+import LandingPage from './components/LandingPage';
+import Profile from './components/Profile';
 
 class App extends React.Component {
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+      <BrowserRouter>
+        <div>
+          <NavBar />
+          <Switch>
+            <Route exact path="/" component={LandingPage} />
+            <Route path="/profile" component={Profile} />
+            <YouTubeAuth />
+          </Switch>
         </div>
-        <YouTubeAuth />
-      </div>
+      </BrowserRouter>
     );
   }
 }
