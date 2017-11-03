@@ -10,7 +10,8 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-scripts-ts": "2.8.0",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   },
   "scripts": {
     "devHTTPS": "HTTPS=true npm start",
@@ -26,6 +27,8 @@
     "@types/react-dom": "^16.0.2",
     "@types/react-redux": "^5.0.12",
     "@types/react-router": "^4.0.16",
-    "@types/react-router-dom": "^4.2.0"
+    "@types/react-router-dom": "^4.2.0",
+    "@types/redux-immutable-state-invariant": "^2.0.3",
+    "redux-immutable-state-invariant": "^2.1.0"
   }
 }
