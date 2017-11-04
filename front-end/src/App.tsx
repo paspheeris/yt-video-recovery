@@ -18,7 +18,7 @@ class App extends React.Component {
             <NavBar />
             <Switch>
               <Route exact path="/" component={LandingPage} />
-              <Route path="/profile" component={Profile} />
+              <Route path="/profile/:state?/:access_token?/:token_type?/:expires_in?/:scope?" component={Profile} />
               <YouTubeAuth />
             </Switch>
           </div>

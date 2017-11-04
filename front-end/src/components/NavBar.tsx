@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { oauthSignIn } from '.././utils/oauth';
 
 class NavBar extends React.Component {
 
@@ -6,11 +7,10 @@ class NavBar extends React.Component {
     return (
       <div>
         hello from the NavBar
+        <div onClick={oauthSignIn}>sign in</div>
       </div>
     );
   }
 }
 
 export default NavBar;
-
-
