@@ -5,8 +5,17 @@ import { connect } from 'react-redux';
 import * as Redux from 'redux';
 // import { bindActionCreators } from 'react-redux';
 import { parseHash, AuthActionInterface } from '.././actions/auth';
+// import { FSA } from '.././global.d';
 
-class Profile extends React.Component<any, any> {
+interface PropTypes {
+  hash: string,
+  parseHash: (hash: string) => void
+}
+
+class Profile extends React.Component<PropTypes> {
+  componentDidMount() {
+    this.props.parseHash(this.props.hash);
+  }
   render() {
     return (
       <div>
@@ -28,5 +37,5 @@ function mapDispatchToProps(dispatch: Redux.Dispatch<AuthActionInterface>) {
   }, dispatch)
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile as any));
 // export default connect(mapStateToProps, mapDispatchToProps)(Profile);

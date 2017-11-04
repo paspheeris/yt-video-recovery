@@ -13,6 +13,8 @@ export interface AuthActionInterface {
   payload: string;
 }
 
+// export declare function parseHash = (hash: string) => FSA<typeKeys, string>;\
+// export function parseHash(hash: string): FSA<typeKeys, string>;
 export function parseHash(hash: string): FSA<typeKeys, string> {
   return {
     type: typeKeys.PARSE_HASH,
