@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { oauthSignIn } from '.././utils/oauth';
+import { oauthSignIn } from '.././utils/auth';
 
 class NavBar extends React.Component {
 

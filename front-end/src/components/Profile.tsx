@@ -8,13 +8,13 @@ import { parseHash, AuthActionInterface } from '.././actions/auth';
 // import { FSA } from '.././global.d';
 
 interface PropTypes {
-  hash: string,
-  parseHash: (hash: string) => void
+  hash: string;
+  parseHash: (hash: string, timeStamp: number) => void;
 }
 
 class Profile extends React.Component<PropTypes> {
   componentDidMount() {
-    this.props.parseHash(this.props.hash);
+    this.props.parseHash(this.props.hash, Date.now());
   }
   render() {
     return (
@@ -28,13 +28,13 @@ class Profile extends React.Component<PropTypes> {
 function mapStateToProps(state: any, ownProps: any) {
   return {
     hash: ownProps.location.hash,
-  }
+  };
 }
 // Redux.Dispatch<AuthActionInterface>
 function mapDispatchToProps(dispatch: Redux.Dispatch<AuthActionInterface>) {
   return Redux.bindActionCreators({
     parseHash,
-  }, dispatch)
+  }, dispatch);
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile as any));

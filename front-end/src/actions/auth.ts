@@ -10,14 +10,21 @@ export enum typeKeys {
 
 export interface AuthActionInterface {
   type: typeKeys;
-  payload: string;
+  payload: AuthActionPayload
+}
+interface AuthActionPayload {
+  hash: string;
+  timeReceived: number;
 }
 
 // export declare function parseHash = (hash: string) => FSA<typeKeys, string>;\
 // export function parseHash(hash: string): FSA<typeKeys, string>;
-export function parseHash(hash: string): FSA<typeKeys, string> {
+export function parseHash(hash: string, timeReceived: number): FSA<typeKeys, AuthActionPayload> {
   return {
     type: typeKeys.PARSE_HASH,
-    payload: hash
+    payload: {
+      hash,
+      timeReceived
+    }
   };
 }
