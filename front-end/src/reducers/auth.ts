@@ -1,6 +1,8 @@
 // import * as Redux from 'redux';
+// attempting to edit from spacemacs
 import { AuthActionInterface, typeKeys } from '.././actions/auth';
 import { parseAuthHash } from '.././utils/auth';
+
 
 const InitState = {
 
