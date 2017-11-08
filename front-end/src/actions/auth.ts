@@ -10,7 +10,7 @@ export enum typeKeys {
 
 export interface AuthActionInterface {
   type: typeKeys;
-  payload: AuthActionPayload
+    payload: AuthActionPayload; 
 }
 interface AuthActionPayload {
   hash: string;

@@ -1,18 +1,10 @@
+import { AuthHash } from '.././global.d';
+
 const scope: string = 'https://www.googleapis.com/auth/youtube';
 const redirectURI: string = 'https://localhost:3000/profile';
 const clientID: string = '473384173845-k0go9oir9g6qsto4tmugfl8l5fcgvpc3.apps.googleusercontent.com';
 
-export interface AuthHash {
-    rawHash: string;
-    state: string;
-    access_token: string;
-    token_type: string;
-    expires_in: number;
-    scope: string;
-}
-
 export function parseAuthHash(hash: string): AuthHash {
-    // const raw = action.payload;
     const authHash = hash.split('&').reduce((accum: AuthHash, fieldStr: string): AuthHash => {
         let [key, value] = fieldStr.split('=');
         // remove the leading '#' from '#state'

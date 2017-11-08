@@ -2,20 +2,15 @@
 // attempti
 import { AuthActionInterface, typeKeys } from '.././actions/auth';
 import { parseAuthHash } from '.././utils/auth';
-
+import { AuthHash } from '.././global.d';
 
 const InitState = {
 
 };
-interface InitState {
-    rawHash?: string;
-    access_token?: string;
-    token_type?: string;
-    expires_in?: number;
-    expires_at?: number;
-    scope?: string;
-}
-function users(state: InitState = InitState, action: AuthActionInterface): InitState {
+type InitState = {} | AuthHash;
+
+function users(state: InitState = InitState,
+               action: AuthActionInterface): InitState {
     switch (action.type) {
         case typeKeys.PARSE_HASH:
             console.log(action.payload);
