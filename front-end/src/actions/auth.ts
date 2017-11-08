@@ -2,15 +2,15 @@
 import { FSA } from '.././global.d';
 
 // export type authAction = 'PARSE_HASH' | 'SignOut';
-export enum typeKeys {
+export enum AuthActions {
   PARSE_HASH = 'PARSE_HASH',
   SIGN_OUT = 'SIGN_OUT',
   _otheraction = '_otheraction'
 }
 
 export interface AuthActionInterface {
-  type: typeKeys;
-    payload: AuthActionPayload; 
+  type: AuthActions;
+    payload: AuthActionPayload;
 }
 interface AuthActionPayload {
   hash: string;
@@ -19,9 +19,9 @@ interface AuthActionPayload {
 
 // export declare function parseHash = (hash: string) => FSA<typeKeys, string>;\
 // export function parseHash(hash: string): FSA<typeKeys, string>;
-export function parseHash(hash: string, timeReceived: number): FSA<typeKeys, AuthActionPayload> {
+export function parseHash(hash: string, timeReceived: number): FSA<AuthActions, AuthActionPayload> {
   return {
-    type: typeKeys.PARSE_HASH,
+    type: AuthActions.PARSE_HASH,
     payload: {
       hash,
       timeReceived
