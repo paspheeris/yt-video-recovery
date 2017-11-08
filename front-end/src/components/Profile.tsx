@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { withRouter } from 'react-router';
-// import * as RR from 'react-router';
 import { connect } from 'react-redux';
 import * as Redux from 'redux';
-// import { bindActionCreators } from 'react-redux';
 import { parseHash, AuthActionInterface } from '.././actions/auth';
-// import { FSA } from '.././global.d';
 
 interface PropTypes {
   hash: string;
