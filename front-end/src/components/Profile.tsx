@@ -5,33 +5,33 @@ import * as Redux from 'redux';
 import { parseHash, AuthActionInterface } from '.././actions/auth';
 
 interface PropTypes {
-  hash: string;
-  parseHash: (hash: string, timeStamp: number) => void;
+    hash: string;
+    parseHash: (hash: string, timeStamp: number) => void;
 }
 
 class Profile extends React.Component<PropTypes> {
-  componentDidMount() {
-    this.props.parseHash(this.props.hash, Date.now());
-  }
-  render() {
-    return (
-      <div>
-        hello from the Profile
+    componentDidMount() {
+        this.props.parseHash(this.props.hash, Date.now());
+    }
+    render() {
+        return (
+            <div>
+                hello from the Profile
       </div>
-    );
-  }
+        );
+    }
 }
 
 function mapStateToProps(state: any, ownProps: any) {
-  return {
-    hash: ownProps.location.hash,
-  };
+    return {
+        hash: ownProps.location.hash,
+    };
 }
 // Redux.Dispatch<AuthActionInterface>
 function mapDispatchToProps(dispatch: Redux.Dispatch<AuthActionInterface>) {
-  return Redux.bindActionCreators({
-    parseHash,
-  }, dispatch);
+    return Redux.bindActionCreators({
+        parseHash,
+    }, dispatch);
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile as any));
