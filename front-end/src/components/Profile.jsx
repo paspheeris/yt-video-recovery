@@ -6,7 +6,9 @@ import { parseHash } from '.././actions/auth';
 
 class Profile extends React.Component {
     componentDidMount() {
-        this.props.parseHash(this.props.hash, Date.now());
+        if(this.props.hash) {
+          this.props.parseHash(this.props.hash, Date.now());
+        }
         this.props.history.push('/profile');
     }
     render() {
