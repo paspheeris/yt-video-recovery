@@ -4,7 +4,7 @@ import reduxImmutableStateInvariant from 'redux-immutable-state-invariant';
 import rootReducer from './reducers/root';
 import thunk from 'redux-thunk';
 import { loadState, saveState } from './utils/localStorage';
-
+import { promiseMiddleware } from './promiseMiddleware';
 // If there is data saved under 'auth' in localStorage, use it
 // in initialising the redux store
 const lsSavedAuth = loadState('auth');
@@ -14,7 +14,7 @@ const defaultState = {
 };
 
 const enhancers = compose(
-    applyMiddleware(thunk, reduxImmutableStateInvariant()),
+    applyMiddleware(thunk, promiseMiddleware, reduxImmutableStateInvariant()),
     window.devToolsExtension ? window.devToolsExtension() : (f) => f
 );
 
