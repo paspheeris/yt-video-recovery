@@ -11,13 +11,13 @@ export const promiseMiddleware = store => next => action => {
             return response.json();
         })
             .then(json => {
-                store.dispatch({ type: `${action.type}_SUCCESS`, payload: json });
+                store.dispatch({ type: `${action.type}_SUCCESS`, payload: json, meta: action.meta });
                 store.dispatch({ type: ASYNC_END, subtype: action.type });
             })
             .catch(error => {
-                // console.log(error);
-                store.dispatch({ type: `${action.type}_FAILURE`, payload: { error } });
+                console.log(error);
+                store.dispatch({ type: `${action.type}_FAILURE`, payload: { error }, meta: action.meta });
                 store.dispatch({ type: ASYNC_END, subtype: action.type });
-            })
+            });
     }
 }

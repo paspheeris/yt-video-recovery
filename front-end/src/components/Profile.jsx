@@ -27,12 +27,20 @@ class Profile extends React.Component {
                <button onClick={this.getPlaylists}>
                  get playlists ttiels promise
                </button>
+               <button onClick={this.getVideos}>
+                 get videos ttiels promise
+               </button>
+
             </div>
         );
     }
     getPlaylists = () => {
         this.props.getPlaylists();
     }
+    getVideos = () => {
+        this.props.getVideos("PLrkcX2uLOH-gXi0fpN5eQRdVatlqozQ0N");
+    }
+
 }
 
 function mapStateToProps(state, ownProps) {
@@ -46,7 +54,8 @@ function mapStateToProps(state, ownProps) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         parseHash,
-        getPlaylists: YT.getPlaylists
+        getPlaylists: YT.getPlaylists,
+        getVideos: YT.getVideosFromPlaylists
     }, dispatch);
 }
 
