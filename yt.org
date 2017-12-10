@@ -1,0 +1,18 @@
+* On logging in and being redirected to the Profile page:
+** Check localStorage 
+** Send authtoken to the backend
+*** Open a websocket connection here? 
+** Validate the authtoken (get the username)
+** Check the db for any data for the associated username 
+*** send any found data to the frontend
+** Send req to YT API for the playlists for the user
+*** Send any found data to the frontend
+*** Save any new playlists in the db
+*** If the number of videos in a playlist matches the number thats in the DB, we dont need to do any further action on that playlist
+** Send req to the YT API to get video titles/data from each playlist 
+*** Send data to the frontend for any new videos that havent been deleted
+*** Save any new videos in the db (whether deleted or not)
+** For any deleted videos in the db, that havent already been checked on the internet archive (IA): 
+*** Send a request to the IA
+*** Store the result in the DB (whether a title was recovered or not)
+** Send results for the deleted videos to the front end
