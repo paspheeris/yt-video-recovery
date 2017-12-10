@@ -16,3 +16,8 @@
 *** Send a request to the IA
 *** Store the result in the DB (whether a title was recovered or not)
 ** Send results for the deleted videos to the front end
+* Websocket note
+** SocketIO is composted of two parts
+   A server that integrates with (or mounts on) the Node.JS HTTP Server: socket.io
+   A client library that loads on the browser side: socket.io-client
+**  

@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('back-end:server');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
 require('dotenv').config()
 
@@ -19,9 +21,22 @@ app.set('port', port);
 
 /**
  * Create HTTP server.
+ * In development, this will be a HTTPS server.
  */
 
-var server = http.createServer(app);
+if(process.env.DEVELOPMENT === 'TRUE') {
+    console.log('in dev if');
+    // Create HTTPS server
+    const sslOptions = {
+        key: fs.readFileSync('key.pem'),
+        cert: fs.readFileSync('cert.pem'),
+        passphrase: process.env.HTTPS_PASSPHRASE
+    };
+    var server = https.createServer(sslOptions, app);
+} else {
+    var server = http.createServer(app);
+}
+
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -90,3 +105,15 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+
+/**
+ * Configure socet.io
+ */
+
+// var io = require('socket.io')(server);
+
+module.exports = {
+    // io,
+    server
+};
