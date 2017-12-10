@@ -3,6 +3,7 @@ var router = express.Router();
 const fetch = require('node-fetch');
 const {server} = require('.././bin/www');
 var io = require('socket.io')(server);
+var cors = require('cors');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -32,6 +33,13 @@ router.get('/validateToken', function(req, res, next) {
         })
         .catch(error => console.log(error));
 });
+var corsOptions = {
+    origin: 'https://localhost:3000',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
+};
+// router.get('/socket.io', cors(corsOptions), function(req, res, next) {
+//     console.log('a socket req or something?');
+// });
 io.on('connection', function(socket){
     console.log('a user connected');
 });
