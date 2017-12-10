@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { parseHash } from '.././actions/auth';
 import { YT } from '.././actions/asyncActions';
+import socket from '.././actions/socket.js';
 
 class Profile extends React.Component {
     componentDidMount() {
@@ -30,6 +31,9 @@ class Profile extends React.Component {
                <button onClick={this.getVideos}>
                  get videos ttiels promise
                </button>
+               <button onClick={this.socketTest}>
+                 socketTest
+               </button>
 
             </div>
         );
@@ -39,6 +43,10 @@ class Profile extends React.Component {
     }
     getVideos = () => {
         this.props.getVideos("PLrkcX2uLOH-gXi0fpN5eQRdVatlqozQ0N");
+    }
+    socketTest = () => {
+        console.log('socket send');
+        socket.send('hurrr');
     }
 
 }

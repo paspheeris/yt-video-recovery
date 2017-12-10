@@ -9,6 +9,7 @@ var debug = require('debug')('back-end:server');
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
+const socket = require('socket.io');
 
 require('dotenv').config()
 
@@ -36,6 +37,16 @@ if(process.env.DEVELOPMENT === 'TRUE') {
 } else {
     var server = http.createServer(app);
 }
+
+/**
+ * Configure socket.io
+ */
+var io = socket(server);
+io.on('connect', (client) => {
+      console.log('connect in the wwww');
+      client.on('message', (d) => console.log(d));
+});
+// console.dir(io);
 
 
 /**
@@ -107,13 +118,10 @@ function onListening() {
 }
 
 
-/**
- * Configure socet.io
- */
 
-// var io = require('socket.io')(server);
+
 
 module.exports = {
-    // io,
+    io,
     server
 };
