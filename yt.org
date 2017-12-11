@@ -1,7 +1,7 @@
 * On logging in and being redirected to the Profile page:
 ** Check localStorage 
 ** Send authtoken to the backend
-*** Open a websocket connection here? 
+*** Open a websocket connection here 
 ** Validate the authtoken (get the username)
 ** Check the db for any data for the associated username 
 *** send any found data to the frontend
