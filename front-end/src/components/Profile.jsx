@@ -34,7 +34,9 @@ class Profile extends React.Component {
                <button onClick={this.socketTest}>
                  socketTest
                </button>
-
+               <button onClick={this.sendToken}>
+                 send token to backend
+               </button>
             </div>
         );
     }
@@ -46,7 +48,17 @@ class Profile extends React.Component {
     }
     socketTest = () => {
         console.log('socket send');
-        socket.send('hurrr');
+        socket.emit('test', 'testData');
+        socket.on('testDataReceived', d => console.log('res from serv', d));
+    }
+    sendToken = () => {
+        console.log('Sending access token to the backend.');
+        // Send token to the backend for authentication
+        if(!this.props.access_token) {
+            console.log('Must log in first!');
+            return;
+        }
+        socket.emit('accessToken', this.props.access_token);
     }
 
 }

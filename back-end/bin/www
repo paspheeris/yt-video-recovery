@@ -10,6 +10,7 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 const socket = require('socket.io');
+const fetch = require('node-fetch');
 
 require('dotenv').config()
 
@@ -41,11 +42,26 @@ if(process.env.DEVELOPMENT === 'TRUE') {
 /**
  * Configure socket.io
  */
+function validateAccessToken(token) {
+    return fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`)
+        .then(data => data.json())
+        .catch(error => console.log(error));
+};
 var io = socket(server);
 io.on('connect', (client) => {
       console.log('connect in the wwww');
-      client.on('message', (d) => console.log(d));
+    client.on('test', (d) => {
+        console.log(d);
+        client.emit('testDataReceived', d);
+    });
+    client.on('accessToken', token => {
+        validateAccessToken(token)
+            .then(something => console.log(something));
+    })
 });
+
+
+
 // console.dir(io);
 
 
