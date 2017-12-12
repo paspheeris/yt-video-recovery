@@ -10,9 +10,20 @@ var users = require('./routes/users');
 
 const cors = require('cors');
 
+const mongoose = require('mongoose');
+
 var app = express();
 
 app.use(cors({ origin: 'https://localhost:3000', credentials: true }));
+
+// //Connect to our Database and handle a bad connection
+// // console.log('provess.env.NODE_ENV', process.env.NODE_ENV);
+// mongoose.connect(process.env.DATABASE);
+// mongoose.Promise = global.Promise; //tell mongoose to use ES6 promises
+// mongoose.connection.on('error', (err) => {
+//     console.error(err.message);
+// });
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
