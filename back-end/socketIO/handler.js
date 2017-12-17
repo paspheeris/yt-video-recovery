@@ -3,6 +3,7 @@ const { validateAccessToken,
 			  parseValidationRes,
 			  getPlaylists,
 			  parsePlaylistRes } = require('../utils/youtube');
+const { saveTestUser } = require('../utils/mongodb');
 
 function socketHandler(client) {
   console.log('connect in the wwww');

@@ -1,16 +1,6 @@
 const fetch = require('node-fetch');
 
 const YT_API_ROOT = `https://www.googleapis.com/youtube/v3`;
-const  User  = require('.././models/User');
-// YtUser.save
-const testUser = new User({email: 'hurr', expiresAt: 123});
-testUser.save()
-    .then(saved => {
-        console.log('successfully saved:', saved);
-    })
-    .catch(error => {
-        console.log(error)
-    });
 
 function validateAccessToken(token) {
     return fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`)
