@@ -3,7 +3,6 @@ const { validateAccessToken,
 			  parseValidationRes,
 			  getPlaylists,
 			  parsePlaylistRes } = require('../utils/youtube');
-const { saveTestUser } = require('../utils/mongodb');
 
 function socketHandler(client) {
   console.log('connect in the wwww');
@@ -18,6 +17,7 @@ function socketHandler(client) {
       .then(validationRes => parseValidationRes(validationRes))
     // .then(userInfo => console.log(userInfo))
     // ...check the db for user info here and send if found
+			.then(userObj => console.log(userObj))
     // ...get playlist data for the user
       .then(_ => getPlaylists(token))
       .then(playlistRes => parsePlaylistRes(playlistRes))

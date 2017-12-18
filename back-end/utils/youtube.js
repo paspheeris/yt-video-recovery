@@ -1,7 +1,6 @@
 const fetch = require('node-fetch');
 
 const YT_API_ROOT = `https://www.googleapis.com/youtube/v3`;
-
 function validateAccessToken(token) {
     return fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`)
         .then(data => data.json())
