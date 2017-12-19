@@ -1,5 +1,5 @@
 const User  = require('.././models/User');
-// const Playlist = require('.././models/Playlist');
+const Playlist = require('.././models/Playlist');
 
 // YtUser.save
 function saveTest() {
@@ -30,8 +30,23 @@ function saveUser(userObj) {
 		.catch(error => console.log(error));
 }
 function savePlaylists(userEmail, playlistObjs) {
-	console.log('playlistObjs in savePlaylists:', playlistObjs);
+	// console.log('playlistObjs in savePlaylists:', playlistObjs);
+	return User.findOne({ email: userEmail })
+		.then(foundUser => {
+			// Filter out playlists that are already saved first
 
+			// Save new playlists
+			playlistObjs.forEach(obj => {
+				// console.log("obj:", obj);
+				const newPlaylist = new Playlist(obj);
+				newPlaylist.save();
+				foundUser.playlists.push(newPlaylist);
+
+				// foundUser.playlists.push(new Playlist(obj));
+			});
+			return foundUser.save();
+		})
+		.catch(error => console.log(error));
     // .then(something => {
     //   something.votesByChoice.push({ choiceName: req.body.choice, count: 1 });
     //   something.allChoices.push(req.body.choice);

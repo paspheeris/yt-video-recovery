@@ -8,18 +8,18 @@ const { saveTest,
 				savePlaylists} = require('../utils/mongodb.js');
 
 function socketHandler(client) {
-  console.log('connect in the wwww');
-  client.on('test', (d) => {
-    console.log(d);
-    client.emit('testDataReceived', d);
-  });
-  client.on('accessToken', token => {
+	console.log('connect in the wwww');
+	client.on('test', (d) => {
+		console.log(d);
+		client.emit('testDataReceived', d);
+	});
+	client.on('accessToken', token => {
 		let userEmail;
-    // Validate token, then...
-    validateAccessToken(token)
-    // ...parse res into a form to use
-      .then(validationRes => parseValidationRes(validationRes))
-    // ...save the user in DB if they're not already there
+		// Validate token, then...
+		validateAccessToken(token)
+		// ...parse res into a form to use
+			.then(validationRes => parseValidationRes(validationRes))
+		// ...save the user in DB if they're not already there
 			.then(userObj => {
 				// Save userEmail in the local scope so that it can be used through
 				// the rest of the promise chain
@@ -33,15 +33,18 @@ function socketHandler(client) {
 					// console.log('userData in promise chain:', userData);
 				}
 			})
-    // ...get playlist data for the user
-      .then(_ => getPlaylists(token))
-      .then(playlistRes => parsePlaylistRes(playlistRes))
-      .then(playlistObjs => {
+		// ...get playlist data for the user
+			.then(_ => getPlaylists(token))
+			.then(playlistRes => parsePlaylistRes(playlistRes))
+			.then(playlistObjs => {
 				// Save any new playlists in the DB under the user
-				savePlaylists(userEmail, playlistObjs);
+				return savePlaylists(userEmail, playlistObjs);
 			})
-      .catch(error => console.log(error));
-  });
+			.then(updatedUser => {
+				console.log(updatedUser);
+			})
+			.catch(error => console.log(error));
+	});
 }
 
 
