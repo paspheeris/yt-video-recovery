@@ -12,6 +12,7 @@ var fs = require('fs');
 const socket = require('socket.io');
 const fetch = require('node-fetch');
 const { socketHandler } = require('.././socketIO/handler');
+var MongoClient = require('mongodb').MongoClient;
 
 require('dotenv').config()
 
@@ -42,17 +43,14 @@ if(process.env.DEVELOPMENT === 'TRUE') {
 
 //Connect to our Database and handle a bad connection
 // console.log('provess.env.NODE_ENV', process.env.NODE_ENV);
+
+// Mongoose
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DATABASE);
 mongoose.Promise = global.Promise; //tell mongoose to use ES6 promises
 mongoose.connection.on('error', (err) => {
     console.error(err.message);
 });
-
-
-/**
- * Configure socket.io
- */
 
 var io = socket(server);
 io.on('connect', client => socketHandler(client));
@@ -125,11 +123,7 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-
-
-
-
 module.exports = {
-    io,
-    server
+	io,
+  server
 };

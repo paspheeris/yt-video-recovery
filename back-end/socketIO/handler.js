@@ -3,7 +3,8 @@ const { validateAccessToken,
 			  parseValidationRes,
 			  getPlaylists,
 			  parsePlaylistRes } = require('../utils/youtube');
-const { saveTest,
+const { db,
+				saveTest,
 			  saveUser,
 				savePlaylists} = require('../utils/mongodb.js');
 
@@ -11,6 +12,11 @@ function socketHandler(client) {
 	console.log('connect in the wwww');
 	client.on('test', (d) => {
 		console.log(d);
+		db().collection("ytusers").insertOne({
+			name: "brandon",
+			age: 25,
+			status: "confirmed"
+		});
 		client.emit('testDataReceived', d);
 	});
 	client.on('accessToken', token => {

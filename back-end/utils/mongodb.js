@@ -1,5 +1,21 @@
+var MongoClient = require('mongodb').MongoClient;
+require('dotenv').config();
 const User  = require('.././models/User');
 const Playlist = require('.././models/Playlist');
+
+const establishDbConnection = _ =>{
+	let connection;
+	MongoClient.connect(process.env.DATABASE, function(err, db) {
+		if(err) console.log(err);
+		if(!err) {
+			connection = db;
+			console.log("We are connected");
+		}
+	});
+	return _ => connection;
+};
+const db = establishDbConnection();
+
 
 // YtUser.save
 function saveTest() {
@@ -30,41 +46,32 @@ function saveUser(userObj) {
 		.catch(error => console.log(error));
 }
 function savePlaylists(userEmail, playlistObjs) {
-	// console.log('playlistObjs in savePlaylists:', playlistObjs);
-	return User.findOne({ email: userEmail })
-		.then(foundUser => {
-			// Filter out playlists that are already saved first
-
-			// Save new playlists
-			playlistObjs.forEach(obj => {
-				// console.log("obj:", obj);
-				const newPlaylist = new Playlist(obj);
-				newPlaylist.save();
-				foundUser.playlists.push(newPlaylist);
-
-				// foundUser.playlists.push(new Playlist(obj));
-			});
-			return foundUser.save();
-		})
-		.catch(error => console.log(error));
-    // .then(something => {
-    //   something.votesByChoice.push({ choiceName: req.body.choice, count: 1 });
-    //   something.allChoices.push(req.body.choice);
-    //   return something.save()
-    // })
-
+	console.log('playlistObjs in savePlaylists:', playlistObjs);
 	
-	// const poll = Poll.findOneAndUpdate(
-  //   { _id: req.params._id, 'votesByChoice.choiceName': req.body.choice },
-  //   { $inc: { 'votesByChoice.$.count': 1 } }, {
-  //     new: true, //return the new Poll instead of the old one
-  //     runValidators: true
-  //   }).exec()
-	// 			.then(something => {
+	
+
+
+
+
+	// return User.findOne({ email: userEmail })
+	// 	.then(foundUser => {
+	// 		// Filter out playlists that are already saved first
+
+	// 		// Save new playlists
+	// 		playlistObjs.forEach(obj => {
+	// 			// console.log("obj:", obj);
+	// 			const newPlaylist = new Playlist(obj);
+	// 			newPlaylist.save();
+	// 			foundUser.playlists.push(newPlaylist);
+	// 		});
+	// 		return foundUser.save();
+	// 	})
+	// 	.catch(error => console.log(error));
 }
 module.exports = {
 	saveTest,
 	saveUser,
-	savePlaylists
+	savePlaylists,
+	db
 };
 
