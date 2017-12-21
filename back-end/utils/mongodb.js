@@ -46,8 +46,19 @@ function saveUser(userObj) {
 		.catch(error => console.log(error));
 }
 function savePlaylists(userEmail, playlistObjs) {
-	console.log('playlistObjs in savePlaylists:', playlistObjs);
-	
+	// Add any new playlists to the playlists array for the user
+
+	// console.log('playlistObjs in savePlaylists:', playlistObjs);
+	return db().collection("ytusers").update(
+		{ email: userEmail},
+		{ $addToSet: { playlists: { $each: playlistObjs}}},
+	)
+		.then(something => {
+			// The update method returns a 'writeResult object here'
+			// cf https://docs.mongodb.com/manual/reference/method/db.collection.update/#writeresults-update
+			something.forEach(writeResult => writeResult);
+		})
+		.catch(error => console.log(error));
 	
 
 

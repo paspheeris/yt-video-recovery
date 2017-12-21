@@ -47,7 +47,7 @@ function socketHandler(client) {
 				return savePlaylists(userEmail, playlistObjs);
 			})
 			.then(updatedUser => {
-				console.log(updatedUser);
+				// console.log(updatedUser);
 			})
 			.catch(error => console.log(error));
 	});
