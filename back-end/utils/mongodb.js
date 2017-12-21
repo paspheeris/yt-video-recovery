@@ -12,7 +12,7 @@ const establishDbConnection = _ =>{
 			console.log("We are connected");
 		}
 	});
-	return _ => connection;
+	return collectionName => connection.collection(collectionName);
 };
 const db = establishDbConnection();
 
@@ -49,7 +49,7 @@ function savePlaylists(userEmail, playlistObjs) {
 	// Add any new playlists to the playlists array for the user
 
 	// console.log('playlistObjs in savePlaylists:', playlistObjs);
-	return db().collection("ytusers").update(
+	return db("ytusers").update(
 		{ email: userEmail},
 		{ $addToSet: { playlists: { $each: playlistObjs}}},
 	)

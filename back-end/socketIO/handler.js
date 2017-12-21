@@ -12,7 +12,7 @@ function socketHandler(client) {
 	console.log('connect in the wwww');
 	client.on('test', (d) => {
 		console.log(d);
-		db().collection("ytusers").insertOne({
+		db("ytusers").insertOne({
 			name: "brandon",
 			age: 25,
 			status: "confirmed"
