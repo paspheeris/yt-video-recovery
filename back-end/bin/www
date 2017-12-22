@@ -53,7 +53,7 @@ mongoose.connection.on('error', (err) => {
 });
 
 var io = socket(server);
-io.on('connect', client => socketHandler(client));
+io.on('connection', socketHandler);
 
 /**
  * Listen on provided port, on all network interfaces.

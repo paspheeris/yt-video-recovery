@@ -57,10 +57,21 @@ function savePlaylists(userEmail, playlistObjs) {
 		{ new: true }
 	);
 }
+function saveVideos(userEmail, plId, videoObjs) {
+	console.log('videoObjs in saveVideos:', videoObjs);
+  return db("ytusers").update(
+		{ email: userEmail,
+		  playlists: { $elemMatch: { id: plId }}},
+		{ $addToSet: { "playlists.$.videos": { $each: videoObjs.items }}},
+		{ upsert: true }
+	)
+		.catch(error => console.log(error));
+}
 module.exports = {
 	saveTest,
 	saveUser,
 	savePlaylists,
-	db
+	db,
+	saveVideos
 };
 
