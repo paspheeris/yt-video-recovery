@@ -47,37 +47,15 @@ function saveUser(userObj) {
 }
 function savePlaylists(userEmail, playlistObjs) {
 	// Add any new playlists to the playlists array for the user
+	// Might want to use mapReduce to do this?
 
 	// console.log('playlistObjs in savePlaylists:', playlistObjs);
-	return db("ytusers").update(
+	return db("ytusers").findAndModify(
 		{ email: userEmail},
+		{},
 		{ $addToSet: { playlists: { $each: playlistObjs}}},
-	)
-		.then(something => {
-			// The update method returns a 'writeResult object here'
-			// cf https://docs.mongodb.com/manual/reference/method/db.collection.update/#writeresults-update
-			something.forEach(writeResult => writeResult);
-		})
-		.catch(error => console.log(error));
-	
-
-
-
-
-	// return User.findOne({ email: userEmail })
-	// 	.then(foundUser => {
-	// 		// Filter out playlists that are already saved first
-
-	// 		// Save new playlists
-	// 		playlistObjs.forEach(obj => {
-	// 			// console.log("obj:", obj);
-	// 			const newPlaylist = new Playlist(obj);
-	// 			newPlaylist.save();
-	// 			foundUser.playlists.push(newPlaylist);
-	// 		});
-	// 		return foundUser.save();
-	// 	})
-	// 	.catch(error => console.log(error));
+		{ new: true }
+	);
 }
 module.exports = {
 	saveTest,

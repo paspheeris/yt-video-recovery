@@ -8,8 +8,12 @@
 ** Send req to YT API for the playlists for the user
 *** Send any found data to the frontend
 *** Save any new playlists in the db
-*** If the number of videos in a playlist matches the number thats in the DB, we dont need to do any further action on that playlist
-** Send req to the YT API to get video titles/data from each playlist 
+** Send req to the YT API to get video titles/data for the first 
+   50 items from each playlist
+*** Check if the number of items in each playlist from the DB matched  
+    the number from the Api request
+**** If theyre not the same, we'll need to do ( differnce / 50 ) requests
+**** If they are the same, we dont need to make any more reqs for that PL
 *** Send data to the frontend for any new videos that havent been deleted
 *** Save any new videos in the db (whether deleted or not)
 ** For any deleted videos in the db, that havent already been checked on the internet archive (IA): 
