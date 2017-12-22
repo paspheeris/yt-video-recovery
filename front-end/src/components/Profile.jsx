@@ -49,7 +49,6 @@ getVideos = () => {
 socketTest = () => {
 	console.log('socket send');
 	socket.emit('test', 'testData');
-	socket.on('testDataReceived', d => console.log('res from serv', d));
 }
 sendToken = () => {
 	console.log('Sending access token to the backend.');
@@ -60,7 +59,6 @@ sendToken = () => {
 	}
 
 	socket.emit('accessToken', this.props.access_token);
-	socket.on('first50', data => console.log('first50 from server', data));
 
 }
 

@@ -5,7 +5,10 @@ console.dir(socket);
 socket.on('connect', function(){
     console.log('connected ont he front end in socket.js');
 });
-socket.on('event', function(data){});
-socket.on('disconnect', function(){});
+// socket.on('event', function(data){});
+// socket.on('disconnect', function(){});
+
+socket.on('testDataReceived', d => console.log('res from serv', d));
+socket.on('first50', data => console.log('first50 from server', data));
 
 export default socket;
