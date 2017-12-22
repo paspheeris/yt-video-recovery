@@ -34,6 +34,7 @@ function saveUser(userObj) {
 			if (data === null) {
 				// User isn't saved in the DB yet, save them
 				console.log('Saving a new user in saveUser function');
+				userObj.videos = [];
 				const newUser = new User(userObj);
 				newUser.save();
 				return null;
@@ -49,7 +50,11 @@ function savePlaylists(userEmail, playlistObjs) {
 	// Add any new playlists to the playlists array for the user
 	// Might want to use mapReduce to do this?
 
+
 	// console.log('playlistObjs in savePlaylists:', playlistObjs);
+	// Simpler to set videos to an empty array here rather than messing
+	// around with upsert'ing later with mongo?
+	playlistObjs.forEach(obj => obj.videos = []);
 	return db("ytusers").findAndModify(
 		{ email: userEmail},
 		{},
@@ -63,7 +68,7 @@ function saveVideos(userEmail, plId, videoObjs) {
 		{ email: userEmail,
 		  playlists: { $elemMatch: { id: plId }}},
 		{ $addToSet: { "playlists.$.videos": { $each: videoObjs.items }}},
-		{ upsert: true }
+		// { "playlists.$.videos": {$addToSet: { $each: videoObjs.items }}},
 	)
 		.catch(error => console.log(error));
 }
