@@ -37,7 +37,14 @@ function parsePlaylistRes(playlistRes) {
     });
 }
 function getVideosFromPlaylist(accessToken, playlistId) {
+	// Fetches the first 50 videos in a given playlist
   return fetch(`${YT_API_ROOT}/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&access_token=${accessToken}`)
+		.then(res => res.json())
+		.catch(err => console.log(err));
+}
+function getVideosWithPageToken(accessToken, playlistId, pageToken) {
+	// Fetches the next 50 videos in a playlist, given a page token
+  return fetch(`${YT_API_ROOT}/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&access_token=${accessToken}&pageToken=${nextToken}`)
 		.then(res => res.json())
 		.catch(err => console.log(err));
 }
@@ -62,7 +69,16 @@ function extractVideosCount(apiRes) {
 	}, {});
 
 }
-
+function fetchAllVideos(accessToken, playlistId, pageToken, accumulator) {
+	// Since the YT API can only return info on 50 videos at a time, and the
+	// next 50 must be fetched with a token that comes in each request, a series
+	// of synchronous calls must be made to the API in order to get all videos
+	// in a playlist
+	return getVideosWithPageToken(accessToken, playlistId, pageToken)
+		.then(next50 => {
+			// return fetchAllVideos
+		})
+}
 module.exports =  {
 	validateAccessToken,
 	parseValidationRes,

@@ -34,13 +34,11 @@ function saveUser(userObj) {
 			if (data === null) {
 				// User isn't saved in the DB yet, save them
 				console.log('Saving a new user in saveUser function');
-				userObj.videos = [];
 				const newUser = new User(userObj);
 				newUser.save();
-				return null;
+				// return newUser.save().then(savedUser => savedUser);
 			} else {
 				// User was found in the DB, return their data
-				// console.log('User found in saveUser function:', data);
 				return data;
 			}
 		})
@@ -49,26 +47,33 @@ function saveUser(userObj) {
 function savePlaylists(userEmail, playlistObjs) {
 	// Add any new playlists to the playlists array for the user
 	// Might want to use mapReduce to do this?
-
-
-	// console.log('playlistObjs in savePlaylists:', playlistObjs);
-	// Simpler to set videos to an empty array here rather than messing
-	// around with upsert'ing later with mongo?
-	playlistObjs.forEach(obj => obj.videos = []);
-	return db("ytusers").findAndModify(
-		{ email: userEmail},
-		{},
-		{ $addToSet: { playlists: { $each: playlistObjs}}},
-		{ new: true }
-	);
+	playlistObjs.forEach(obj => {
+		if(obj.videos === undefined) {
+			obj.videos = [];
+		}
+	});
+	return db('ytusers').findOne(
+		{ email: userEmail }
+	).then(storedUser => {
+		const storedPlIds = storedUser.playlists.map(pl => pl.id);
+		const newPlaylists = playlistObjs.filter(plObj => {
+			return !storedPlIds.includes(plObj.id);
+		});
+		return db("ytusers").findAndModify(
+			{ email: userEmail },
+			{},
+			{ $push: {playlists: { $each: newPlaylists}}}
+		)
+	})
 }
 function saveVideos(userEmail, plId, videoObjs) {
-	console.log('videoObjs in saveVideos:', videoObjs);
   return db("ytusers").update(
 		{ email: userEmail,
-		  playlists: { $elemMatch: { id: plId }}},
-		{ $addToSet: { "playlists.$.videos": { $each: videoObjs.items }}},
-		// { "playlists.$.videos": {$addToSet: { $each: videoObjs.items }}},
+		  // playlists: { $elemMatch: { id: plId }}},
+		  "playlists.id": plId },
+		// { $addToSet: { "playlists.$.videos": { $each: videoObjs.items }}},
+		// { "playlists.$.videos": {$addToSet:  {$each: videoObjs.items}}}
+		{ $addToSet: {"playlists.$.videos": {$each: videoObjs.items}}}
 	)
 		.catch(error => console.log(error));
 }

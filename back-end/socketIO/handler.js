@@ -101,7 +101,7 @@ function socketHandler(client) {
 								return playlistObj.items[0].snippet.playlistId === plId;
 							});
 							const nextPageToken = first50.nextPageToken;
-							console.log(apiVideosCount[plId], nextPageToken);
+							// console.log(apiVideosCount[plId], nextPageToken);
 
 							if (difference === 0) {
 
