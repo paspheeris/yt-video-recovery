@@ -5,7 +5,8 @@ const { validateAccessToken,
 			  parsePlaylistRes,
 			  getVideosFromPlaylist,
 			  createVideosCount,
-			  extractVideosCount } = require('../utils/youtube');
+			  extractVideosCount,
+			  fetchAllVideos } = require('../utils/youtube');
 const { db,
 				saveTest,
 			  saveUser,
@@ -19,7 +20,7 @@ function socketHandler(client) {
 		// db("ytusers").insertOne({
 		// 	name: "brandon",
 		// 	age: 25,
-		// 	status: "confirmed"
+		// 	status: "confirme"
 		// });
 		client.emit('testDataReceived', d);
 	});
@@ -80,7 +81,8 @@ function socketHandler(client) {
 						// A: If the length of the PL in the DB and in the API res is the
 						//    same, then we're done with that playlist for the rest of the
 						//    process, because nothng has changed, so we can just send the
-						//    info that we have for it.
+						//    info that we have for it. *Actually, if a video was deleted
+						//    since last time, then theres more work to be done*.
 						// B: If the difference in length between the PL in the DB and in
 						//    the Api Res is <= 50, then we've already fetched all the new
 						//    videos that we need (this should cover the majority of
@@ -93,7 +95,14 @@ function socketHandler(client) {
 					  //    fetched) and do all the work searching for deleted videos,
 						//    and send all that info to the frontend.
 
+						// Actually, don't we need to fetch the entirety of each playlist
+						// each time, because a video could have been deleted since the
+						// last visit, and comparing lengths of PL in the DB vs PL in the
+						// API res won't tell us anything about that...
+
 						Object.keys(apiVideosCount).forEach(plId => {
+							if(plId !== 'PLrkcX2uLOH-gXi0fpN5eQRdVatlqozQ0N') return;
+							// cs pl id: PLrkcX2uLOH-gXi0fpN5eQRdVatlqozQ0N
 							const difference = apiVideosCount[plId] - dbVideosCount[plId];
 							// Have to find the PL that where dealing with from the apiRes,
 							// might be better to do this some way else
@@ -103,14 +112,18 @@ function socketHandler(client) {
 							const nextPageToken = first50.nextPageToken;
 							// console.log(apiVideosCount[plId], nextPageToken);
 
-							if (difference === 0) {
+							// if (difference === 0) {
 
-							} else if (difference <= 50) {
-								saveVideos(userEmail, plId, first50);
+							// } else if (difference <= 50) {
+							// 	saveVideos(userEmail, plId, first50);
 
-							} else if (difference > 50) {
-								  // fetchAll()
-							}
+							// } else if (difference > 50) {
+							console.log('nextPageToken socketHandler chain', nextPageToken);
+								const allNewVideos = fetchAllVideos(
+									token, plId, nextPageToken, first50.items
+								);
+							allNewVideos.then(vids => client.emit('allNewVideos', vids));
+							// }
 						});
 
 					});

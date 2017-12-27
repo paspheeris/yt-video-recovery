@@ -42,9 +42,9 @@ function getVideosFromPlaylist(accessToken, playlistId) {
 		.then(res => res.json())
 		.catch(err => console.log(err));
 }
-function getVideosWithPageToken(accessToken, playlistId, pageToken) {
+function getVideosWithPageToken(accessToken, playlistId, nextPageToken) {
 	// Fetches the next 50 videos in a playlist, given a page token
-  return fetch(`${YT_API_ROOT}/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&access_token=${accessToken}&pageToken=${nextToken}`)
+  return fetch(`${YT_API_ROOT}/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&access_token=${accessToken}&pageToken=${nextPageToken}`)
 		.then(res => res.json())
 		.catch(err => console.log(err));
 }
@@ -69,15 +69,23 @@ function extractVideosCount(apiRes) {
 	}, {});
 
 }
-function fetchAllVideos(accessToken, playlistId, pageToken, accumulator) {
+function fetchAllVideos(accessToken, playlistId, nextPageToken, accumulator) {
 	// Since the YT API can only return info on 50 videos at a time, and the
 	// next 50 must be fetched with a token that comes in each request, a series
 	// of synchronous calls must be made to the API in order to get all videos
 	// in a playlist
-	return getVideosWithPageToken(accessToken, playlistId, pageToken)
+	// Base Case
+	if (nextPageToken === undefined) return accumulator;
+	// Recurse Case
+	else return getVideosWithPageToken(accessToken, playlistId, nextPageToken)
 		.then(next50 => {
-			// return fetchAllVideos
+			// console.log('next50 in fetchAllVideos', next50);
+			return fetchAllVideos(
+				accessToken, playlistId, next50.nextPageToken,
+				accumulator.concat(next50.items)
+			);
 		})
+	  .catch(error => console.log(error));
 }
 module.exports =  {
 	validateAccessToken,
@@ -86,5 +94,6 @@ module.exports =  {
 	parsePlaylistRes,
 	getVideosFromPlaylist,
 	createVideosCount,
-	extractVideosCount
+	extractVideosCount,
+	fetchAllVideos
 };
