@@ -69,20 +69,35 @@ function extractVideosCount(apiRes) {
 	}, {});
 
 }
-function fetchAllVideos(accessToken, playlistId, nextPageToken, accumulator) {
+function fetchAllVideos(accessToken, playlistId, nextPageToken, accum) {
 	// Since the YT API can only return info on 50 videos at a time, and the
-	// next 50 must be fetched with a token that comes in each request, a series
-	// of synchronous calls must be made to the API in order to get all videos
-	// in a playlist
+	// next 50 must be fetched with a token that comes in each request, a
+	// synchronous series of calls must be made to the API in order to get
+	// all videos in a playlist
+
 	// Base Case
-	if (nextPageToken === undefined) return accumulator;
+	if (nextPageToken === undefined && accum.length !== 0) return accum;
 	// Recurse Case
+	else if (nextPageToken === undefined && accum.length === 0) {
+		// Getting the first 50 of a PL, so there's no nextPageToken yet
+		return getVideosFromPlaylist(accessToken, playlistId)
+			.then(first50 => {
+				return fetchAllVideos(
+					accessToken, playlistId, first50.nextPageToken,
+					accum.concat(first50.items)
+				);
+			});
+	}
 	else return getVideosWithPageToken(accessToken, playlistId, nextPageToken)
 		.then(next50 => {
+			// if (next50.items.length === 0) {
+				// Make sure there's something in the playlist?
+				// return accum;
+			// }
 			// console.log('next50 in fetchAllVideos', next50);
 			return fetchAllVideos(
 				accessToken, playlistId, next50.nextPageToken,
-				accumulator.concat(next50.items)
+				accum.concat(next50.items)
 			);
 		})
 	  .catch(error => console.log(error));

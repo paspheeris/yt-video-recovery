@@ -58,7 +58,8 @@ sendToken = () => {
 			return;
 	}
 
-	socket.emit('accessToken', this.props.access_token);
+	/* socket.emit('accessToken', this.props.access_token);*/
+	socket.emit('initialLogin', this.props.access_token);
 
 }
 

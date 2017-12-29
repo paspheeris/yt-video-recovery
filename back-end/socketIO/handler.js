@@ -24,6 +24,38 @@ function socketHandler(client) {
 		// });
 		client.emit('testDataReceived', d);
 	});
+	client.on('initialLogin', token => {
+		let userObj;
+		// allVideos is a Promise of an array of Promises that resolve to a pl
+		// of all of the videos from the PL, as returned by the YT API
+		const allVideos = validateAccessToken(token)
+			.then(validationRes => {
+				// console.log('token:', token);
+				userObj = parseValidationRes(validationRes);
+				return getPlaylists(token);
+			})
+			.then(playlistRes => {
+				const playlistObjs = parsePlaylistRes(playlistRes);
+				// if(plId !== ) return;
+				// Just look at the CS PL for now
+				const filtered = playlistObjs.filter(pl => pl.id === 'PLrkcX2uLOH-gXi0fpN5eQRdVatlqozQ0N');
+				return filtered.map(playlistObj => {
+				// return playlistObjs.map(playlistObj => {
+					return fetchAllVideos(token, playlistObj.id, undefined, []);
+				});
+			})
+			.catch(error => console.log(error));
+
+		// console.log('allVideos', allVideos);
+		allVideos.then(plPromises => {
+			plPromises.forEach(plPromise => {
+				plPromise.then(pl => {
+					client.emit('pleasePrint', pl);
+				});
+			});
+		})
+			.catch(error => console.log(error));
+	});
 	client.on('accessToken', token => {
 		let userEmail;
 		// Validate token, then...
