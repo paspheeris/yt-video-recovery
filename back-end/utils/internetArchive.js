@@ -11,10 +11,41 @@ function checkAvailability(videoId) {
 	return fetch(endpoint)
 		.then(res => {
 			return res.json();
-			// console.log(res);
+		})
+		.then(json => {
+			// Parse the response into a more useful form
+
+			const { available, url, timestamp } =
+						json.archived_snapshots.closest;
+
+			// Maybe include the videoId here for convenience later?
+			return ({
+				available, // true or false
+				url,
+				timestamp
+			});
+		})
+		.catch(error => console.log(error));
+}
+function extractTitle(snapshotUrl) {
+	return fetch(snapshotUrl)
+		.then(something => {
+			return something.text();
+		})
+		.then(htmlStr => {
+			const titleStart = htmlStr.indexOf('<title>');
+			const titleEnd = htmlStr.indexOf('</title>', titleStart);
+			const title = htmlStr.slice(titleStart + 7, titleEnd);
+			console.log(titleStart,titleEnd);
+			if (titleStart === -1 || titleEnd === -1) {
+				console.log('Error: error parsing the html res in extractTitle');
+			}
+			return title.trim();
+			// return typeof htmlStr;
 		})
 		.catch(error => console.log(error));
 }
 module.exports = {
-	checkAvailability
+	checkAvailability,
+	extractTitle
 };

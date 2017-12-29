@@ -14,7 +14,8 @@ const { db,
 				savePlaylists,
 			  saveVideos,
 				getUser } = require('../utils/mongodb.js');
-const { checkAvailability } = require('../utils/internetArchive');
+const { checkAvailability,
+				extractTitle } = require('../utils/internetArchive');
 function socketHandler(client) {
 	console.log('connect in the wwww');
 	client.on('test', (d) => {
@@ -30,7 +31,11 @@ function socketHandler(client) {
 	client.on('waybackTest', videoId => {
 		checkAvailability(videoId)
 			.then(status => {
-				client.emit('pleasePrint', status);
+				return extractTitle(status.url);
+				// client.emit('pleasePrint', status);
+			})
+			.then(title => {
+				client.emit('pleasePrint', title);
 			})
 			.catch(error => console.log(error));
 	});
