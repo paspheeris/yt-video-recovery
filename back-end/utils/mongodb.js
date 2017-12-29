@@ -17,7 +17,7 @@ const establishDbConnection = _ =>{
 const db = establishDbConnection();
 
 
-// YtUser.save
+
 function saveTest() {
 	const testUser = new User({email: 'hurr', expiresAt: 123});
 	testUser.save()
@@ -27,6 +27,16 @@ function saveTest() {
 		.catch(error => {
 			console.log(error);
 		});
+}
+function getUser(username) {
+  return db("ytusers").findOne(
+		{ email: username }
+	)
+		.then(userData => {
+			// console.log('userData: ', userData);
+			return userData;
+		})
+		.catch(error => console.log(error));
 }
 function saveUser(userObj) {
 	return User.findOne({ email: userObj.email })
@@ -82,6 +92,7 @@ module.exports = {
 	saveUser,
 	savePlaylists,
 	db,
-	saveVideos
+	saveVideos,
+	getUser
 };
 
