@@ -102,6 +102,13 @@ function fetchAllVideos(accessToken, playlistId, nextPageToken, accum) {
 		})
 	  .catch(error => console.log(error));
 }
+function extractDeletedVideos(playlist) {
+	// Given a playlist of videos, returns the videos that have been deleted
+	return playlist.filter(video => {
+		return video.snippet.description === "This video is unavailable."
+					 || video.snippet.title === "Deleted video";
+	});
+}
 module.exports =  {
 	validateAccessToken,
 	parseValidationRes,
@@ -110,5 +117,6 @@ module.exports =  {
 	getVideosFromPlaylist,
 	createVideosCount,
 	extractVideosCount,
-	fetchAllVideos
+	fetchAllVideos,
+	extractDeletedVideos
 };

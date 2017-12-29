@@ -6,14 +6,15 @@ const { validateAccessToken,
 			  getVideosFromPlaylist,
 			  createVideosCount,
 			  extractVideosCount,
-			  fetchAllVideos } = require('../utils/youtube');
+			  fetchAllVideos,
+				extractDeletedVideos } = require('../utils/youtube');
 const { db,
 				saveTest,
 			  saveUser,
 				savePlaylists,
 			  saveVideos,
 				getUser } = require('../utils/mongodb.js');
-
+const { checkAvailability } = require('../utils/internetArchive');
 function socketHandler(client) {
 	console.log('connect in the wwww');
 	client.on('test', (d) => {
@@ -25,6 +26,15 @@ function socketHandler(client) {
 		// });
 		client.emit('testDataReceived', d);
 	});
+
+	client.on('waybackTest', videoId => {
+		checkAvailability(videoId)
+			.then(status => {
+				client.emit('pleasePrint', status);
+			})
+			.catch(error => console.log(error));
+	});
+
 	client.on('initialLogin', token => {
 		const allPlaylists = getPlaylists(token);
 		const validatedUser = validateAccessToken(token);
@@ -37,7 +47,7 @@ function socketHandler(client) {
 			.then(playlistRes => {
 				const playlistObjs = parsePlaylistRes(playlistRes);
 				// Just look at the CS PL for now
-				const filtered = playlistObjs.filter(pl => pl.id === 'PLrkcX2uLOH-gXi0fpN5eQRdVatlqozQ0N');
+				const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
 				return filtered.map(playlistObj => {
 				// return playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
@@ -51,7 +61,8 @@ function socketHandler(client) {
 				// allVideos.then(plPromises => {
 					allVideos.forEach(plPromise => {
 						plPromise.then(pl => {
-							client.emit('pleasePrint', pl);
+							const deletedVids = extractDeletedVideos(pl);
+							client.emit('pleasePrint', deletedVids);
 						});
 					// });
 				});
