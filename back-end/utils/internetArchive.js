@@ -43,8 +43,15 @@ function checkAvailability(videoId) {
 
 function extractTitle(snapshotUrl) {
 	return fetch(snapshotUrl)
-		.then(something => {
-			return something.text();
+		.then(res => {
+			if (res.status !== 200) {
+				return Promise.reject({
+					'error': 'Problem extracting title',
+					'status': res.status,
+					'statusText': res.statusText
+				});
+			}
+			return res.text();
 		})
 		.then(htmlStr => {
 			const titleStart = htmlStr.indexOf('<title>');
@@ -54,10 +61,16 @@ function extractTitle(snapshotUrl) {
 			if (titleStart === -1 || titleEnd === -1) {
 				console.log('Error: error parsing the html res in extractTitle');
 			}
+			// console.log(title.trim());
 			return title.trim();
 			// return typeof htmlStr;
 		})
-		.catch(error => console.log(error));
+		.catch(error => {
+			console.log(error);
+			// Returning here puts the error on the title field, shouldnt stay
+			// like this
+			// return error;
+		});
 }
 module.exports = {
 	checkAvailability,

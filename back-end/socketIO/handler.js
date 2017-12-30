@@ -63,72 +63,40 @@ function socketHandler(client) {
 
 		Promise.all([userInDb, allVideos])
 			.then(( [userInDb, allVideos] ) => {
-				client.emit('pleasePrint', userInDb);
-				// allVideos.then(plPromises => {
-				// console.log('allVideos: ', allVideos);
-					allVideos.forEach(plPromise => {
-						plPromise.then(pl => {
-							const deletedVids = extractDeletedVideos(pl);
-							client.emit('pleasePrint', deletedVids);
+				// client.emit('pleasePrint', userInDb);
+				allVideos.forEach(plPromise => {
+					plPromise.then(pl => {
+						const deletedVids = extractDeletedVideos(pl);
 
-							return deletedVids.map(vid => {
-								// console.log(deletedVids.length);
-								// console.log('Deleted video ID: ', vid.snippet.resourceId.videoId);
-								return checkAvailability(vid.snippet.resourceId.videoId);
-							});
+						return deletedVids.map(vid => {
+							return checkAvailability(vid.snippet.resourceId.videoId);
+						});
+					})
+						.then(promiseArr => {
+							// Don't necesarily have to wait on all the availibility checks
+							// to complete here, could process them as they return
+							return Promise.all(promiseArr);
 						})
-							.then(promiseArr => {
-								return Promise.all(promiseArr);
-								// console.log(promiseArr);
-							})
-							.then(promises => {
-								client.emit('pleasePrint', promises);
-							})
-					// });
+						.then(promises => {
+							// client.emit('pleasePrint', promises);
+							promises = promises.map(deletedVid => {
+								if(deletedVid.available === false) return deletedVid;
+								else {
+									return extractTitle(deletedVid.url).then(title => {
+										return Object.assign({}, deletedVid, {title});
+									});
+								}
+							});
+							return Promise.all(promises);
+						})
+						.then(deletedVidsWithTitles => {
+							client.emit('pleasePrint', deletedVidsWithTitles);
+						});
 				});
 			})
 			.catch(error => console.log(error));
-		// allVideos is a Promise of an array of Promises that resolve to a pl
-		// of all of the videos from the PL, as returned by the YT API
-		// const userInDb = validateAccessToken(token) 
-		// 		.then(validationRes => {
-		// 			userObj = parseValidationRes(validationRes);
-		// 			// return Promise.all([getPlaylists(token), getUser(userObj.email)]);
-		// 			return getPlaylists(token);
-		// 		})
-		// 		.then(something => {
-		// 			console.log(something);
-		// 		})
-		// 			.catch(error => console.log(error));
-		
-		// const allVideos = validateAccessToken(token)
-		// 	.then(validationRes => {
-		// 		// console.log('token:', token);
-		// 		userObj = parseValidationRes(validationRes);
-		// 		return getPlaylists(token);
-		// 	})
-		// 	.then(playlistRes => {
-		// 		const playlistObjs = parsePlaylistRes(playlistRes);
-		// 		// if(plId !== ) return;
-		// 		// Just look at the CS PL for now
-		// 		const filtered = playlistObjs.filter(pl => pl.id === 'PLrkcX2uLOH-gXi0fpN5eQRdVatlqozQ0N');
-		// 		return filtered.map(playlistObj => {
-		// 		// return playlistObjs.map(playlistObj => {
-		// 			return fetchAllVideos(token, playlistObj.id, undefined, []);
-		// 		});
-		// 	})
-		// 	.catch(error => console.log(error));
-
-		// console.log('allVideos', allVideos);
-		// allVideos.then(plPromises => {
-		// 	plPromises.forEach(plPromise => {
-		// 		plPromise.then(pl => {
-		// 			client.emit('pleasePrint', pl);
-		// 		});
-		// 	});
-		// })
-		// 	.catch(error => console.log(error));
 	});
+
 	client.on('accessToken', token => {
 		let userEmail;
 		// Validate token, then...
