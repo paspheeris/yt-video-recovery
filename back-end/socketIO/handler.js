@@ -65,12 +65,14 @@ function socketHandler(client) {
 			.then(( [userInDb, allVideos] ) => {
 				client.emit('pleasePrint', userInDb);
 				// allVideos.then(plPromises => {
+				// console.log('allVideos: ', allVideos);
 					allVideos.forEach(plPromise => {
 						plPromise.then(pl => {
 							const deletedVids = extractDeletedVideos(pl);
 							client.emit('pleasePrint', deletedVids);
 
 							return deletedVids.map(vid => {
+								// console.log(deletedVids.length);
 								// console.log('Deleted video ID: ', vid.snippet.resourceId.videoId);
 								return checkAvailability(vid.snippet.resourceId.videoId);
 							});

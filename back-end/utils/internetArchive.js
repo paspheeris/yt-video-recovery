@@ -1,15 +1,12 @@
 const fetch = require('node-fetch');
 
 function checkAvailability(videoId) {
-	// Returns an "archived_snapshot" that tells whether a page has been saved
-	// on the video archive. Since the newest archive of a video might be from
-	// after it had been deleted, we also provide a timestamp long before the
-	// video date, so that the nearest snapshot that it returns is the first
-	// snapshot that was taken of a video.
-	// console.log(videoId);
 	const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-	const endpoint = `http://archive.org/wayback/available?url=${videoUrl}&timestamp=20060101`;
-	// console.log(endpoint);
+	const endpoint = `http://web.archive.org/cdx/search/cdx?url=${videoUrl}&output=json`
+
+	// The form of the JSON response is odd, check this link for an example
+	// http://web.archive.org/cdx/search/cdx?url=https://www.youtube.com/watch?v=zQ05vleQZOQ&output=json
+
 	return fetch(endpoint)
 		.then(res => {
 			if (res.status !== 200) {
@@ -22,26 +19,28 @@ function checkAvailability(videoId) {
 			else return res.json();
 		})
 		.then(json => {
-			console.log(json);
-			if(!json.archived_snapshots.closest) {
-				return {'available': false, videoId};
+			if (json.length === 0) {
+				// When a page isn't archived, the cdx API returns an empty arr;
+				return {
+					'available': false,
+					videoId
+				};
 			}
-			const { available, url, timestamp } =
-						json.archived_snapshots.closest;
-
-			// Maybe include the videoId here for convenience later?
-			return ({
-				available, // true or false
+			const timestamp = json[1][1];
+			const url = `http://web.archive.org/web/${timestamp}/${videoUrl}`;
+			return {
 				url,
 				timestamp,
+				'available': true,
 				videoId
-			});
+			};
 		})
 		.catch(error => {
 			console.log(error);
 			return error;
 		});
 }
+
 function extractTitle(snapshotUrl) {
 	return fetch(snapshotUrl)
 		.then(something => {

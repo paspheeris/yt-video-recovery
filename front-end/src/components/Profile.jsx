@@ -66,7 +66,8 @@ componentDidMount() {
 
 	}
 	waybackTest = () => {
-		const videoId = '-CofLWgdAm4';
+		/* const videoId = '-CofLWgdAm4';*/
+		const videoId = 'zQ05vleQZOQ'; // Video with inconsistent results
 		console.log(`Sending videoId ${videoId} for waybackTest`);
 		socket.emit('waybackTest', videoId);
 	}
