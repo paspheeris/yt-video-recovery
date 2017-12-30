@@ -53,6 +53,7 @@ function socketHandler(client) {
 				const playlistObjs = parsePlaylistRes(playlistRes);
 				// Just look at the CS PL for now
 				const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
+				// const filtered = playlistObjs.filter(pl => pl.id === 'FLnhPe1QlSHSS81GTB-YoZXA');
 				return filtered.map(playlistObj => {
 				// return playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
@@ -68,7 +69,19 @@ function socketHandler(client) {
 						plPromise.then(pl => {
 							const deletedVids = extractDeletedVideos(pl);
 							client.emit('pleasePrint', deletedVids);
-						});
+
+							return deletedVids.map(vid => {
+								// console.log('Deleted video ID: ', vid.snippet.resourceId.videoId);
+								return checkAvailability(vid.snippet.resourceId.videoId);
+							});
+						})
+							.then(promiseArr => {
+								return Promise.all(promiseArr);
+								// console.log(promiseArr);
+							})
+							.then(promises => {
+								client.emit('pleasePrint', promises);
+							})
 					// });
 				});
 			})

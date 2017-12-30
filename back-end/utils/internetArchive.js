@@ -10,10 +10,16 @@ function checkAvailability(videoId) {
 	const endpoint = `http://archive.org/wayback/available?url=${videoUrl}&timestamp=20060101`;
 	return fetch(endpoint)
 		.then(res => {
+			// console.log(res.archived_snapshots);
 			return res.json();
 		})
 		.then(json => {
+			// console.log('json:', json);
 			// Parse the response into a more useful form
+
+			// if(!json.archived_snapshots) {
+			// 	return {"available": false};
+			// }
 
 			const { available, url, timestamp } =
 						json.archived_snapshots.closest;
@@ -22,10 +28,14 @@ function checkAvailability(videoId) {
 			return ({
 				available, // true or false
 				url,
-				timestamp
+				timestamp,
+				videoId
 			});
 		})
-		.catch(error => console.log(error));
+		.catch(error => {
+			// console.log(error);
+			return {'available': false, videoId};
+		});
 }
 function extractTitle(snapshotUrl) {
 	return fetch(snapshotUrl)
