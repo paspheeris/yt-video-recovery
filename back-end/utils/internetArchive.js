@@ -6,21 +6,26 @@ function checkAvailability(videoId) {
 	// after it had been deleted, we also provide a timestamp long before the
 	// video date, so that the nearest snapshot that it returns is the first
 	// snapshot that was taken of a video.
+	// console.log(videoId);
 	const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
 	const endpoint = `http://archive.org/wayback/available?url=${videoUrl}&timestamp=20060101`;
+	// console.log(endpoint);
 	return fetch(endpoint)
 		.then(res => {
-			// console.log(res.archived_snapshots);
-			return res.json();
+			if (res.status !== 200) {
+				return Promise.reject({
+					'error': 'Problem checking availibility of resource',
+					'status': res.status,
+					'statusText': res.statusText
+				});
+			}
+			else return res.json();
 		})
 		.then(json => {
-			// console.log('json:', json);
-			// Parse the response into a more useful form
-
-			// if(!json.archived_snapshots) {
-			// 	return {"available": false};
-			// }
-
+			console.log(json);
+			if(!json.archived_snapshots.closest) {
+				return {'available': false, videoId};
+			}
 			const { available, url, timestamp } =
 						json.archived_snapshots.closest;
 
@@ -33,8 +38,8 @@ function checkAvailability(videoId) {
 			});
 		})
 		.catch(error => {
-			// console.log(error);
-			return {'available': false, videoId};
+			console.log(error);
+			return error;
 		});
 }
 function extractTitle(snapshotUrl) {
@@ -46,7 +51,7 @@ function extractTitle(snapshotUrl) {
 			const titleStart = htmlStr.indexOf('<title>');
 			const titleEnd = htmlStr.indexOf('</title>', titleStart);
 			const title = htmlStr.slice(titleStart + 7, titleEnd);
-			console.log(titleStart,titleEnd);
+			// console.log(titleStart,titleEnd);
 			if (titleStart === -1 || titleEnd === -1) {
 				console.log('Error: error parsing the html res in extractTitle');
 			}
