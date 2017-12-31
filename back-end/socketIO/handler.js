@@ -27,7 +27,23 @@ function socketHandler(client) {
 		// });
 		client.emit('testDataReceived', d);
 	});
-
+	client.on('scrapeDebug', videoId => {
+		console.log(videoId);
+		checkAvailability(videoId)
+			.then(availData => {
+				if(availData.available === false) {
+					client.emit('pleasePrint',
+											`No archive found for ${videoId}; no scrape to debug`);
+					return;
+				}
+				else return fetch(availData.url);
+			})
+			.then(rawRes => rawRes.text())
+			.then(htmlStr => {
+				client.emit('pleasePrint', htmlStr);
+			})
+			.catch(error => console.log(error));
+	})
 	client.on('waybackTest', videoId => {
 		checkAvailability(videoId)
 			.then(status => {
@@ -79,15 +95,21 @@ function socketHandler(client) {
 						})
 						.then(promises => {
 							// client.emit('pleasePrint', promises);
-							promises = promises.map(deletedVid => {
+							const scraped = promises.map(deletedVid => {
 								if(deletedVid.available === false) return deletedVid;
 								else {
+									// console.log('deltedVid.url: ', deletedVid.url);
+									// client.emit('pleasePrint', deletedVid);
 									return extractTitle(deletedVid.url).then(title => {
-										return Object.assign({}, deletedVid, {title});
+										if (title === 'staleSnapshot') return {
+											'available': false,
+											'videoId': deletedVid.videoId
+										};
+										else return Object.assign({}, deletedVid, {title});
 									});
 								}
 							});
-							return Promise.all(promises);
+							return Promise.all(scraped);
 						})
 						.then(deletedVidsWithTitles => {
 							client.emit('pleasePrint', deletedVidsWithTitles);

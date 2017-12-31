@@ -62,14 +62,18 @@ function extractTitle(snapshotUrl) {
 				console.log('Error: error parsing the html res in extractTitle');
 			}
 			// console.log(title.trim());
-			return title.trim();
-			// return typeof htmlStr;
+			const trimmedTitle = title.trim();
+
+			// It's possible that even the earliest archive of a YT page is a
+			// snapshot of the page after the video had been deleted. In that case,
+			// all that's between the <title> tags is 'YouTube', so we need to
+			// return some error rather than the scraped title, to be dealth with
+			// at the site calling this function
+			if(trimmedTitle === 'YouTube') return 'staleSnapshot';
+			else return trimmedTitle;
 		})
 		.catch(error => {
 			console.log(error);
-			// Returning here puts the error on the title field, shouldnt stay
-			// like this
-			// return error;
 		});
 }
 module.exports = {

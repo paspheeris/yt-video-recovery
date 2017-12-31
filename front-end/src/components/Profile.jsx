@@ -7,6 +7,12 @@ import { YT } from '.././actions/asyncActions';
 import socket from '.././actions/socket.js';
 
 class Profile extends React.Component {
+	constructor() {
+		super();
+		this.state = {
+			scrapeDebugVideoId: ''
+		}
+	}
 componentDidMount() {
 	if(this.props.hash) {
 		// Dispatch the hash to be parsed and stored
@@ -40,9 +46,24 @@ componentDidMount() {
 			<button onClick={this.waybackTest}>
 				waybackTest
 			</button>
+			<div>
+				<span>Webarchive scrape debugging</span>
+				<input type='text' placeholder='Enter a video Id...'
+				 onChange={this.handleScrapeDebugInput} />
+				<button onClick={this.submitScrapeDebug}>submit</button>
+			</div>
 	</div>
 );
 }
+	handleScrapeDebugInput = (e) => {
+		console.log(e.target.value);
+		this.setState({ scrapeDebugVideoId: e.target.value });
+	}
+	submitScrapeDebug = () => {
+		console.log(`Submitting ${this.state.scrapeDebugVideoId} for  scrape
+								debugging.`)
+		socket.emit('scrapeDebug', this.state.scrapeDebugVideoId);
+	}
 	getPlaylists = () => {
 		this.props.getPlaylists();
 	}
