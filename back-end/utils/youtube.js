@@ -109,6 +109,10 @@ function extractDeletedVideos(playlist) {
 					 || video.snippet.title === "Deleted video";
 	});
 }
+function vidIsDeleted(videoObj) {
+	return videoObj.snippet.description === "This video is unavailable."
+	|| videoObj.snippet.title === "Deleted video";
+}
 module.exports =  {
 	validateAccessToken,
 	parseValidationRes,
@@ -118,5 +122,6 @@ module.exports =  {
 	createVideosCount,
 	extractVideosCount,
 	fetchAllVideos,
-	extractDeletedVideos
+	extractDeletedVideos,
+	vidIsDeleted
 };

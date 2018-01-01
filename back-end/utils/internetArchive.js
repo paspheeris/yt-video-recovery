@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 
 function checkAvailability(videoId) {
+	// console.log(videoId);
 	const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
 	const endpoint = `http://web.archive.org/cdx/search/cdx?url=${videoUrl}&output=json`
 
