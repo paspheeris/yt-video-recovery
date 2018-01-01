@@ -98,14 +98,12 @@ function socketHandler(client) {
 			.catch(error => console.log(error));
 
 		const allVidsWithDeletedTitles = allVidsWithArchiveStatus.then(pls => {
-			return pls.map(pl => {
-				return pl.map(vid => {
-					// console.log(vid.archive);
+			return Promise.all(pls.map(pl => {
+				return Promise.all(pl.map(vid => {
 					if (vid.archive === undefined) return vid;
 					else {
 						return vid.archive.then(status => {
-							// console.log('STATUS: ', status);
-							client.emit('pleasePrint', status);
+							// client.emit('pleasePrint', status);
 							if(status.available === false) {
 								return Object.assign({}, vid, { archive: status });
 							}
@@ -118,25 +116,30 @@ function socketHandler(client) {
 									return Object.assign({}, vid, {archive: statusWithTitle });
 								});
 							}
-						}); 
+						});
 					}
-				});
-			});
+				}));
+			}));
 		});
 
-		allVidsWithDeletedTitles.then(pls => {
-			pls.forEach(pl => {
-				// console.log(pl);
-				pl.forEach(vid => {
-					// having promises nested on a huge data ray as atributes of objs...
-					if(vid.archive !== undefined) {
-						vid.archive.then(something => {
-							client.emit('pleasePrint', something);
-						})
-					}
-				})
-			})
+		allVidsWithDeletedTitles.then(something => {
+			client.emit('pleasePrint', something);
 		});
+
+		// allVidsWithDeletedTitles.then(pls => {
+		// 	pls.forEach(pl => {
+		// 		// console.log(pl);
+		// 		pl.forEach(vid => {
+		// 			// having promises nested on a huge data ray as atributes of objs...
+		// 			if(vid.archive !== undefined) {
+		// 				vid.archive.then(something => {
+		// 					client.emit('pleasePrint', something);
+		// 				})
+		// 			}
+		// 		})
+		// 	})
+		// });
+
 		// const deletedVidsWithStatus = Promise.all([userInDb, playlistsWithAllVids])
 		// 	.then(( [userInDb, playlistsWithAllVids] ) => {
 		// 		// client.emit('pleasePrint', userInDb);
