@@ -100,22 +100,40 @@ function socketHandler(client) {
 		const allVidsWithDeletedTitles = allVidsWithArchiveStatus.then(pls => {
 			return pls.map(pl => {
 				return pl.map(vid => {
+					// console.log(vid.archive);
 					if (vid.archive === undefined) return vid;
 					else {
-						const titlePromise = vid.archive.then(status => {
-							if(status.available === false) return status;
-							else return extractTitle(status.url);
+						return vid.archive.then(status => {
+							// console.log('STATUS: ', status);
+							client.emit('pleasePrint', status);
+							if(status.available === false) {
+								return Object.assign({}, vid, { archive: status });
+							}
+							else {
+								const titlePromise = extractTitle(status.url);
+								return titlePromise.then(titleStr => {
+									const statusWithTitle = Object.assign(
+										{}, status, {title: titleStr}
+									);
+									return Object.assign({}, vid, {archive: statusWithTitle });
+								});
+							}
 						}); 
-						return Object.assign({}, vid, { archive: titlePromise });
 					}
 				});
 			});
 		});
 
 		allVidsWithDeletedTitles.then(pls => {
-			pls.map(pl => {
-				pl.map(vid => {
+			pls.forEach(pl => {
+				// console.log(pl);
+				pl.forEach(vid => {
 					// having promises nested on a huge data ray as atributes of objs...
+					if(vid.archive !== undefined) {
+						vid.archive.then(something => {
+							client.emit('pleasePrint', something);
+						})
+					}
 				})
 			})
 		});

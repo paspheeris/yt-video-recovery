@@ -43,6 +43,7 @@ function checkAvailability(videoId) {
 }
 
 function extractTitle(snapshotUrl) {
+	// console.log(snapshotUrl);
 	return fetch(snapshotUrl)
 		.then(res => {
 			if (res.status !== 200) {
