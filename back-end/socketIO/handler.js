@@ -1,4 +1,6 @@
 const fetch = require('node-fetch');
+const util = require('util');
+const setTimeoutPromise = util.promisify(setTimeout);
 const { validateAccessToken,
 			  parseValidationRes,
 			  getPlaylists,
@@ -81,10 +83,8 @@ function socketHandler(client) {
 
 		const allVidsWithArchiveStatus = playlistsWithAllVids
 			.then(plsWithAllVids => {
-				// console.log(something);
-				// client.emit('pleasePrint', something);
 				return plsWithAllVids.map(pl => {
-					return pl.map(vid => {
+					return pl.map(( vid, i ) => {
 						const { videoId } = vid.snippet.resourceId;
 						if(vidIsDeleted(vid)) {
 							const availPromise = checkAvailability(videoId);
@@ -103,13 +103,11 @@ function socketHandler(client) {
 					if (vid.archive === undefined) return vid;
 					else {
 						return vid.archive.then(status => {
-							// client.emit('pleasePrint', status);
 							if(status.available === false
 								 || status.url === undefined) {
 								return Object.assign({}, vid, { archive: status });
 							}
 							else {
-								// console.log('TILESTRTITITITITITITITITIT: ', status.url);
 								const titlePromise = extractTitle(status.url);
 								return titlePromise.then(titleStr => {
 									const statusWithTitle = Object.assign(
@@ -128,7 +126,9 @@ function socketHandler(client) {
 			// client.emit('pleasePrint', something);
 			something.forEach(pl => {
 				const filtered = pl.filter(vid => vid.archive && vid.archive.available);
+				const actuallyHaveTitles = pl.filter(vid => vid.archive && vid.archive.title);
 				client.emit('pleasePrint', filtered);
+				client.emit('pleasePrint', actuallyHaveTitles);
 			});
 		});
 

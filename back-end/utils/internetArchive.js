@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 function checkAvailability(videoId) {
-	console.log(videoId);
+	// console.log(videoId);
 	const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
 	const endpoint = `http://web.archive.org/cdx/search/cdx?url=${videoUrl}&output=json`
 
@@ -38,9 +38,12 @@ function checkAvailability(videoId) {
 		})
 		.catch(error => {
 			console.log(error);
-			return {
-				'available': false,
-				videoId
+			// The Internet Archive appears to do rate limiting that's not documented
+			// anywhere. Here we just redo the request if we get the 'ECONNREFUSED'
+			// error. Should probably add in a maximum number of retries to make, so
+			// that we don't get caught in infinite recursion here.
+			if(error.errno === 'ECONNREFUSED') {
+				return checkAvailability(videoId);
 			}
 		});
 }
@@ -53,7 +56,8 @@ function extractTitle(snapshotUrl) {
 				return Promise.reject({
 					'error': 'Problem extracting title',
 					'status': res.status,
-					'statusText': res.statusText
+					'statusText': res.statusText,
+					snapshotUrl
 				});
 			}
 			return res.text();
@@ -79,6 +83,10 @@ function extractTitle(snapshotUrl) {
 		})
 		.catch(error => {
 			console.log(error);
+			if(error.errno === 'ECONNREFUSED') {
+				return checkAvailability(snapshotUrl);
+			}
+
 		});
 }
 module.exports = {
