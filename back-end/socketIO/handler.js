@@ -104,10 +104,12 @@ function socketHandler(client) {
 					else {
 						return vid.archive.then(status => {
 							// client.emit('pleasePrint', status);
-							if(status.available === false) {
+							if(status.available === false
+								 || status.url === undefined) {
 								return Object.assign({}, vid, { archive: status });
 							}
 							else {
+								// console.log('TILESTRTITITITITITITITITIT: ', status.url);
 								const titlePromise = extractTitle(status.url);
 								return titlePromise.then(titleStr => {
 									const statusWithTitle = Object.assign(
@@ -123,7 +125,11 @@ function socketHandler(client) {
 		});
 
 		allVidsWithDeletedTitles.then(something => {
-			client.emit('pleasePrint', something);
+			// client.emit('pleasePrint', something);
+			something.forEach(pl => {
+				const filtered = pl.filter(vid => vid.archive && vid.archive.available);
+				client.emit('pleasePrint', filtered);
+			});
 		});
 
 		// allVidsWithDeletedTitles.then(pls => {
