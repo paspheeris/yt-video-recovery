@@ -74,25 +74,29 @@ function socketHandler(client) {
 				const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
 				// const filtered = playlistObjs.filter(pl => pl.id === 'FLnhPe1QlSHSS81GTB-YoZXA');
 				const promiseArr = filtered.map(playlistObj => {
-				// return playlistObjs.map(playlistObj => {
+				// const promiseArr = playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
 				});
-				return Promise.all(promiseArr);
+				// return Promise.all(promiseArr);
+				return promiseArr;
 			})
 			.catch(error => console.log(error));
 
 		const allVidsWithArchiveStatus = playlistsWithAllVids
 			.then(plsWithAllVids => {
-				return plsWithAllVids.map(pl => {
-					return pl.map(( vid, i ) => {
-						const { videoId } = vid.snippet.resourceId;
-						if(vidIsDeleted(vid)) {
-							const availPromise = checkAvailability(videoId);
-							return Object.assign({}, vid,
-																	 {archive: availPromise});
-						}
-						else return vid;
-					});
+				return plsWithAllVids.map(plPromise => {
+					return plPromise.then(pl => {
+						client.emit('pleasePrint', pl);
+						return pl.map(( vid, i ) => {
+							const { videoId } = vid.snippet.resourceId;
+							if(vidIsDeleted(vid)) {
+								const availPromise = checkAvailability(videoId);
+								return Object.assign({}, vid,
+																		 {archive: availPromise});
+							}
+							else return vid;
+						});
+					})
 				});
 			})
 			.catch(error => console.log(error));
@@ -120,15 +124,19 @@ function socketHandler(client) {
 					}
 				}));
 			}));
-		});
+		})
+					.then(error => console.log(error));
+
 
 		allVidsWithDeletedTitles.then(something => {
 			// client.emit('pleasePrint', something);
 			something.forEach(pl => {
 				const filtered = pl.filter(vid => vid.archive && vid.archive.available);
-				const actuallyHaveTitles = pl.filter(vid => vid.archive && vid.archive.title);
+				// const actuallyHaveTitles = pl.filter(vid => vid.archive && vid.archive.title);
+				client.emit('pleasePrint', `pl length: ${pl.length}`);
+				client.emit('pleasePrint', `deleted: ${pl.filter(vid => vid.archive).length}`);
 				client.emit('pleasePrint', filtered);
-				client.emit('pleasePrint', actuallyHaveTitles);
+				// client.emit('pleasePrint', actuallyHaveTitles);
 			});
 		});
 

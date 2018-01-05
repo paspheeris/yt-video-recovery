@@ -37,7 +37,7 @@ function checkAvailability(videoId) {
 			};
 		})
 		.catch(error => {
-			console.log(error);
+			// console.log(error);
 			// The Internet Archive appears to do rate limiting that's not documented
 			// anywhere. Here we just redo the request if we get the 'ECONNREFUSED'
 			// error. Should probably add in a maximum number of retries to make, so
@@ -82,9 +82,9 @@ function extractTitle(snapshotUrl) {
 			else return trimmedTitle;
 		})
 		.catch(error => {
-			console.log(error);
+			// console.log(error);
 			if(error.errno === 'ECONNREFUSED') {
-				return checkAvailability(snapshotUrl);
+				return extractTitle(snapshotUrl);
 			}
 
 		});
