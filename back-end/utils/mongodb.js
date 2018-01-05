@@ -96,6 +96,13 @@ function saveUpdatedVideos(userEmail, plId, videos) {
 	)
 		.catch(error => console.log(error));
 }
+function updateUser(userEmail, newUserObj) {
+	return db('ytusers').update(
+		{ email: userEmail},
+		newUserObj
+	)
+		.catch(error => console.log(error));
+}
 module.exports = {
 	saveTest,
 	saveUser,
@@ -103,6 +110,7 @@ module.exports = {
 	db,
 	saveVideos,
 	getUser,
-	saveUpdatedVideos
+	saveUpdatedVideos,
+	updateUser
 };
 

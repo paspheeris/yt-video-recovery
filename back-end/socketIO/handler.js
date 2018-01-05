@@ -17,7 +17,8 @@ const { db,
 				savePlaylists,
 			  saveVideos,
 				getUser,
-				saveUpdatedVideos } = require('../utils/mongodb.js');
+				saveUpdatedVideos,
+				updateUser } = require('../utils/mongodb.js');
 const { checkAvailability,
 				extractTitle } = require('../utils/internetArchive');
 function socketHandler(client) {
@@ -72,8 +73,8 @@ function socketHandler(client) {
 			.then(playlistRes => {
 				const playlistObjs = parsePlaylistRes(playlistRes);
 				// Just look at the CS PL for now
-				const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
-				// const filtered = playlistObjs.filter(pl => pl.id === 'FLnhPe1QlSHSS81GTB-YoZXA');
+				// const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
+				const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
 				const promiseArr = filtered.map(playlistObj => {
 				// const promiseArr = playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
@@ -132,11 +133,7 @@ function socketHandler(client) {
 					.catch(error => console.log(error));
 
 
-		// const validatedUser = validateAccessToken(token);
-
-		// const userInDb = validatedUser.then(validationRes => {
-		// 	userObj = parseValidationRes(validationRes);
-
+		// Send data to the front end as it resolves per PL
 		Promise.all([allVidsWithDeletedTitles, validatedUser]).then(
 			( [ plsPromise, validationRes ] ) => {
 				const userObj = parseValidationRes(validationRes);
@@ -148,21 +145,31 @@ function socketHandler(client) {
 						.then(vids => {
 							const { playlistId } = vids[0].snippet;
 							saveUpdatedVideos(userObj.email, playlistId, vids);
-							client.emit('pleasePrint', vids);
+							// client.emit('pleasePrint', vids);
 						})
 				})
-			// console.log('plsPromise: ', plsPromise);
 		})
 			.catch(error => console.log(error));
 
-		// allVidsWithDeletedTitles.then(something => {
-		// 	something.forEach(pl => {
-		// 		const filtered = pl.filter(vid => vid.archive && vid.archive.available);
-		// 		client.emit('pleasePrint', `pl length: ${pl.length}`);
-		// 		client.emit('pleasePrint', `deleted: ${pl.filter(vid => vid.archive).length}`);
-		// 		client.emit('pleasePrint', filtered);
-		// 	});
-		// });
+		// Wait for all the PLs to resolve before saving in the DB
+		Promise.all([allVidsWithDeletedTitles, userInDb]).then(
+			([ plsPromise, user ]) => {
+				const resolvedPls = Promise.all(plsPromise.map(plPromise => {
+					return plPromise.then(vidsPromises => Promise.all(vidsPromises));
+				}));
+				return Promise.all([resolvedPls, user]);
+			}
+		)
+			.then(( [pls, user] ) => {
+				client.emit('pleasePrint', [pls, user]);
+				// Just dumps the pls onto user as an array of anonymous object atm,
+				// might be more convenient to store them in the DB indexed by
+				// PL name or PL ID or something rather than just arr's of objs
+				user.playlists = pls;
+				updateUser(user.email, user);
+			})
+			.catch(error => console.log(error));
+
 	});
 }
 module.exports = {
