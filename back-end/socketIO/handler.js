@@ -67,14 +67,16 @@ function socketHandler(client) {
 
 		const userInDb = validatedUser.then(validationRes => {
 			const userObj = parseValidationRes(validationRes);
-			return getUser(userObj.email);
-		}).catch(error => console.log(error));
+			return getUser(userObj);
+		})
+			.catch(error => console.log(error));
+
 		const playlistsWithAllVids = allPlaylists
 			.then(playlistRes => {
 				const playlistObjs = parsePlaylistRes(playlistRes);
 				// Just look at the CS PL for now
-				// const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
-				const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
+				const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
+				// const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
 				const promiseArr = filtered.map(playlistObj => {
 				// const promiseArr = playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);

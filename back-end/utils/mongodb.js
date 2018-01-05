@@ -28,13 +28,19 @@ function saveTest() {
 			console.log(error);
 		});
 }
-function getUser(username) {
+function getUser(userObj) {
+	// Get's a user's data from the data, or if no user is found with a matching,
+	// email, a new user is created and returned
   return db("ytusers").findOne(
-		{ email: username }
+		{ email: userObj.email }
 	)
 		.then(userData => {
-			// console.log('userData: ', userData);
-			return userData;
+			console.log('userData: ', userData);
+			if (userData === null) {
+				const newUser = Object.assign({}, userObj, {playlists: []});
+				db('ytusers').insert(newUser).catch(e => console.log(e));
+				return newUser;
+			} else return userData;
 		})
 		.catch(error => console.log(error));
 }
