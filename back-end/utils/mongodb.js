@@ -87,12 +87,22 @@ function saveVideos(userEmail, plId, videoObjs) {
 	)
 		.catch(error => console.log(error));
 }
+
+function saveUpdatedVideos(userEmail, plId, videos) {
+  return db("ytusers").update(
+		{ email: userEmail,
+		  "playlists.id": plId },
+		{ $set: {"playlists.$.videos":  videos}}
+	)
+		.catch(error => console.log(error));
+}
 module.exports = {
 	saveTest,
 	saveUser,
 	savePlaylists,
 	db,
 	saveVideos,
-	getUser
+	getUser,
+	saveUpdatedVideos
 };
 

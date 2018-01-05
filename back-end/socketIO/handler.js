@@ -16,7 +16,8 @@ const { db,
 			  saveUser,
 				savePlaylists,
 			  saveVideos,
-				getUser } = require('../utils/mongodb.js');
+				getUser,
+				saveUpdatedVideos } = require('../utils/mongodb.js');
 const { checkAvailability,
 				extractTitle } = require('../utils/internetArchive');
 function socketHandler(client) {
@@ -64,7 +65,7 @@ function socketHandler(client) {
 		const validatedUser = validateAccessToken(token);
 
 		const userInDb = validatedUser.then(validationRes => {
-			userObj = parseValidationRes(validationRes);
+			const userObj = parseValidationRes(validationRes);
 			return getUser(userObj.email);
 		}).catch(error => console.log(error));
 		const playlistsWithAllVids = allPlaylists
@@ -86,7 +87,7 @@ function socketHandler(client) {
 			.then(plsWithAllVids => {
 				return plsWithAllVids.map(plPromise => {
 					return plPromise.then(pl => {
-						client.emit('pleasePrint', pl);
+						// client.emit('pleasePrint', pl);
 						return pl.map(( vid, i ) => {
 							const { videoId } = vid.snippet.resourceId;
 							if(vidIsDeleted(vid)) {
@@ -102,108 +103,66 @@ function socketHandler(client) {
 			.catch(error => console.log(error));
 
 		const allVidsWithDeletedTitles = allVidsWithArchiveStatus.then(pls => {
-			return Promise.all(pls.map(pl => {
-				return Promise.all(pl.map(vid => {
-					if (vid.archive === undefined) return vid;
-					else {
-						return vid.archive.then(status => {
-							if(status.available === false
-								 || status.url === undefined) {
-								return Object.assign({}, vid, { archive: status });
-							}
-							else {
-								const titlePromise = extractTitle(status.url);
-								return titlePromise.then(titleStr => {
-									const statusWithTitle = Object.assign(
-										{}, status, {title: titleStr}
-									);
-									return Object.assign({}, vid, {archive: statusWithTitle });
-								});
-							}
-						});
-					}
-				}));
-			}));
-		})
-					.then(error => console.log(error));
-
-
-		allVidsWithDeletedTitles.then(something => {
-			// client.emit('pleasePrint', something);
-			something.forEach(pl => {
-				const filtered = pl.filter(vid => vid.archive && vid.archive.available);
-				// const actuallyHaveTitles = pl.filter(vid => vid.archive && vid.archive.title);
-				client.emit('pleasePrint', `pl length: ${pl.length}`);
-				client.emit('pleasePrint', `deleted: ${pl.filter(vid => vid.archive).length}`);
-				client.emit('pleasePrint', filtered);
-				// client.emit('pleasePrint', actuallyHaveTitles);
+			return pls.map(plPromise => {
+				return plPromise.then(pl => {
+					// client.emit('pleasePrint', pl);
+					return pl.map(vid => {
+						if (vid.archive === undefined) return vid;
+						else {
+							return vid.archive.then(status => {
+								if(status.available === false
+									 || status.url === undefined) {
+									return Object.assign({}, vid, { archive: status });
+								}
+								else {
+									const titlePromise = extractTitle(status.url);
+									return titlePromise.then(titleStr => {
+										const statusWithTitle = Object.assign(
+											{}, status, {title: titleStr}
+										);
+										return Object.assign({}, vid, {archive: statusWithTitle });
+									});
+								}
+							});
+						}
+					});
+				})
 			});
-		});
+		})
+					.catch(error => console.log(error));
 
-		// allVidsWithDeletedTitles.then(pls => {
-		// 	pls.forEach(pl => {
-		// 		// console.log(pl);
-		// 		pl.forEach(vid => {
-		// 			// having promises nested on a huge data ray as atributes of objs...
-		// 			if(vid.archive !== undefined) {
-		// 				vid.archive.then(something => {
-		// 					client.emit('pleasePrint', something);
-		// 				})
-		// 			}
-		// 		})
-		// 	})
+
+		// const validatedUser = validateAccessToken(token);
+
+		// const userInDb = validatedUser.then(validationRes => {
+		// 	userObj = parseValidationRes(validationRes);
+
+		Promise.all([allVidsWithDeletedTitles, validatedUser]).then(
+			( [ plsPromise, validationRes ] ) => {
+				const userObj = parseValidationRes(validationRes);
+				client.emit('pleasePrint', userObj);
+				plsPromise.forEach(plPromise => {
+					plPromise.then(vidsPromises => {
+						return Promise.all(vidsPromises);
+					})
+						.then(vids => {
+							const { playlistId } = vids[0].snippet;
+							saveUpdatedVideos(userObj.email, playlistId, vids);
+							client.emit('pleasePrint', vids);
+						})
+				})
+			// console.log('plsPromise: ', plsPromise);
+		})
+			.catch(error => console.log(error));
+
+		// allVidsWithDeletedTitles.then(something => {
+		// 	something.forEach(pl => {
+		// 		const filtered = pl.filter(vid => vid.archive && vid.archive.available);
+		// 		client.emit('pleasePrint', `pl length: ${pl.length}`);
+		// 		client.emit('pleasePrint', `deleted: ${pl.filter(vid => vid.archive).length}`);
+		// 		client.emit('pleasePrint', filtered);
+		// 	});
 		// });
-
-		// const deletedVidsWithStatus = Promise.all([userInDb, playlistsWithAllVids])
-		// 	.then(( [userInDb, playlistsWithAllVids] ) => {
-		// 		// client.emit('pleasePrint', userInDb);
-		// 		const availStatus = playlistsWithAllVids.map(plPromise => {
-
-		// 			return plPromise.then(pl => {
-		// 				const deletedVids = extractDeletedVideos(pl);
-
-		// 				return deletedVids.map(vid => {
-		// 					return checkAvailability(vid.snippet.resourceId.videoId);
-		// 				});
-		// 			});
-		// 		});
-		// 		return availStatus;
-		// 	})
-		// 	.catch(error => console.log(error));
-
-		// console.log(deletedVidsWithStatus);
-		// deletedVidsWithStatus.then(vids => {
-		// 	client.emit('pleasePrint', vids);
-		// });
-
-	// 		.then(deletedVidsByPl => {
-	// 			// client.emit('pleasePrint', promises);
-	// 			const scraped = deletedVidsByPl.map(pl => {
-	// 				return pl.map(deletedVid => {
-	// 					if(deletedVid.available === false) return deletedVid;
-	// 					else {
-	// 						// console.log('deltedVid.url: ', deletedVid.url);
-	// 						// client.emit('pleasePrint', deletedVid);
-	// 						return extractTitle(deletedVid.url).then(title => {
-	// 							if (title === 'staleSnapshot') return {
-	// 								'available': false,
-	// 								'videoId': deletedVid.videoId
-	// 							};
-	// 							else return Object.assign({}, deletedVid, {title});
-	// 						});
-	// 					}
-	// 				});
-	// 			});
-	// 			return scraped;
-	// 		})
-	// 	.catch(error => console.log(error));
-
-	// console.log('deletedVidsWithTitles', deletedVidsWithTitles);
-	// Promise.all(deletedVidsWithTitles).then(deletedVids => {
-	// 	// console.log("DELTEDVID: ", deletedVid);
-	// 	client.emit('pleasePrint', deletedVids);
-	// })
-
 	});
 }
 module.exports = {
