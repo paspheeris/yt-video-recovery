@@ -7,6 +7,7 @@ import './App.css';
 import store from './store';
 import NavBar from './components/NavBar';
 import LandingPage from './components/LandingPage';
+import Test from './components/Test';
 import Profile from './components/Profile';
 
 class App extends React.Component {
@@ -19,6 +20,7 @@ class App extends React.Component {
             <Switch>
             <Route exact={true} path="/" component={LandingPage} />
               <Route path="/profile/:state?/:access_token?/:token_type?/:expires_in?/:scope?" component={Profile} />
+							<Route path='/test' component={Test} />
               <YouTubeAuth />
             </Switch>
           </div>

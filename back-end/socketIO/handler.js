@@ -61,6 +61,16 @@ function socketHandler(client) {
 			.catch(error => console.log(error));
 	});
 
+	client.on('getDbCache', token => {
+		validateAccessToken(token).then(validationRes => {
+			const userObj = parseValidationRes(validationRes);
+			// console.log(userObj);
+			return getUser(userObj);
+		})
+			.then(user => client.emit('getDbCache', user))
+			.catch(error => console.log(error));
+	});
+
 	client.on('initialLogin', token => {
 		const allPlaylists = getPlaylists(token);
 		const validatedUser = validateAccessToken(token);
@@ -77,8 +87,8 @@ function socketHandler(client) {
 				// Just look at the CS PL for now
 				const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
 				// const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
-				const promiseArr = filtered.map(playlistObj => {
-				// const promiseArr = playlistObjs.map(playlistObj => {
+				// const promiseArr = filtered.map(playlistObj => {
+				const promiseArr = playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
 				});
 				// return Promise.all(promiseArr);

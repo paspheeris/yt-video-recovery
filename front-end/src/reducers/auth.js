@@ -1,4 +1,8 @@
 import {
+    SIGN_OUT
+} from '../actions/constants';
+
+import {
     authActions
 } from '.././actions/auth';
 import {
@@ -26,6 +30,8 @@ function users(state = {}, action) {
                 expires_at: expires_in + action.payload.timeReceived,
                 scope
             };
+        case SIGN_OUT:
+            return {};
         default:
             return state;
     }

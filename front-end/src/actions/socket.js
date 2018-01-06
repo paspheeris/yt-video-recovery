@@ -12,4 +12,5 @@ socket.on('testDataReceived', d => console.log('res from serv', d));
 socket.on('first50', data => console.log('first50 from server', data));
 socket.on('allNewVideos', data => console.log('allNewVideos from server', data));
 socket.on('pleasePrint', d => console.log('From backend \n', d));
+socket.on('getDbCache', userObj => console.log(userObj));
 export default socket;

@@ -35,7 +35,7 @@ function getUser(userObj) {
 		{ email: userObj.email }
 	)
 		.then(userData => {
-			console.log('userData: ', userData);
+			// console.log('userData: ', userData);
 			if (userData === null) {
 				const newUser = Object.assign({}, userObj, {playlists: []});
 				db('ytusers').insert(newUser).catch(e => console.log(e));

@@ -9,7 +9,9 @@ export function parseAuthHash(hash) {
         if (key[0] === '#') { key = key.slice(1); }
         if (key === 'expires_in') {
             const expiresInt = parseInt(value, 10);
-            accum[key] = expiresInt;
+					// YT api expires_in is in seconds rather than milliseconds, so
+					// * 1000 to get ms for easier use with Date.now() later
+            accum[key] = expiresInt * 1000;
         } else {
             accum[key] = value;
         }
