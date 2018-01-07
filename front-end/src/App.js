@@ -10,6 +10,7 @@ import LandingPage from './components/LandingPage';
 import Test from './components/Test';
 import Profile from './components/Profile';
 import About from './components/About';
+import Playlist from './components/Playlist';
 
 class App extends React.Component {
   render() {
@@ -23,6 +24,7 @@ class App extends React.Component {
               <Route path="/profile/:state?/:access_token?/:token_type?/:expires_in?/:scope?" component={Profile} />
 							<Route path='/test' component={Test} />
 							<Route path='/about' component={About} />
+							<Route path='/playlist/*' component={Playlist} />
               <YouTubeAuth />
             </Switch>
           </div>
