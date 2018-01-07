@@ -10,7 +10,7 @@ import Video from './Video';
 function Playlist({plTitle, videos}) {
 	return (
 		<Container>
-			<Header as='h2' >{plTitle}</Header>
+			<Header as='h1' >{plTitle}</Header>
 				<Item.Group divided>
 					{videos && videos.map(( video, i ) => {
 						 return <Video video={video} />

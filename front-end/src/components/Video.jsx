@@ -1,15 +1,24 @@
 import React from 'react';
 import { Icon, Image as ImageComponent, Item } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
+import recycle from '../recycle.svg';
 
 function Video({video}) {
-	if(video.archive === undefined) {
+	/* if(video.archive === undefined && !video.snippet.'
+		 vids with a title of 'Private video are showing up here... one in the tup
+		 playlist'
+		 console.log(video);
+		 }*/
+	if(video.archive === undefined && video.snippet.thumbnails) {
 		// Non-removed video
+		const ytLink =
+			`https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`;
+
 		return (
 			<Item>
-				<Item.Image size='small' src={video.snippet.thumbnails.medium.url} />
+				<Item.Image as='a' href={ytLink} target='_blank' size='small' src={video.snippet.thumbnails.medium.url} />
 				<Item.Content>
-					<Item.Header >{video.snippet.title}</Item.Header>
+					<Item.Header as='a' href={ytLink} target='_blank' >{video.snippet.title}</Item.Header>
 					{/* <Item.Description>asdf</Item.Description> */}
 					{/* <Item.Extra>
 							<Icon color='green' name='check' /> 121 Votes
@@ -18,10 +27,39 @@ function Video({video}) {
 			</Item>
 		)
 	} else if (video.archive && video.archive.available === true
-						 && video.archive.snapshot !== 'staleSnapshot') {
+						 && video.archive.title !== 'staleSnapshot') {
 		// Removed video, but one for which a title was recovered
+		const title = video.archive.title;
+		const titleNoSpaces = title.split(' ').join('+');
+		const ytSearchLink = `https://www.youtube.com/results?search_query=${titleNoSpaces}`;
+		return (
+			<Item>
+				{/* <Item.Image as='img' size='small' src='recycle.svg' /> */}
+				<img className='ui small image' src={recycle} />
+				<Item.Content>
+					<Item.Header >[Recovered Video]</Item.Header>
+					<br />
+					<Item.Header >{title}</Item.Header>
+					<Item.Description>
+						Search for this title:
+						<a href={ytSearchLink} target='_blank' >
+							<Icon 
+								name='youtube' size='big' color='red' />
+						</a>
+						<Icon name='google' size='big' color='blue'/>
+						<Icon name='vimeo' size='big' color='teal'/>
+					</Item.Description>
+					{/* <Item.Extra>
+							<Icon color='green' name='check' /> 121 Votes
+							</Item.Extra> */}
+				</Item.Content>
+			</Item>
+		)
 	} else {
 		// Removed video, for which nothing was recovered
+		return (
+			false
+		)
 	}
 	/* return (
 		 <Item as={Link} to={`/playlist/${plMetadata.title}`}>
