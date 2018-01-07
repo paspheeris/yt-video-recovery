@@ -13,7 +13,7 @@ function Playlist({plTitle, videos}) {
 			<Header as='h1' >{plTitle}</Header>
 				<Item.Group divided>
 					{videos && videos.map(( video, i ) => {
-						 return <Video video={video} />
+						 return <Video video={video} key={i}/>
 					})}
 				</Item.Group>
 		</Container>

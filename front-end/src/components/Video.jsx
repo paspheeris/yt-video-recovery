@@ -1,5 +1,6 @@
 import React from 'react';
-import { Icon, Image as ImageComponent, Item } from 'semantic-ui-react';
+import { Icon, Image as ImageComponent, Item,
+				Label, Button} from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import recycle from '../recycle.svg';
 
@@ -32,6 +33,8 @@ function Video({video}) {
 		const title = video.archive.title;
 		const titleNoSpaces = title.split(' ').join('+');
 		const ytSearchLink = `https://www.youtube.com/results?search_query=${titleNoSpaces}`;
+		const googleSearchLink = `https://www.google.com/search?q=${titleNoSpaces}`;
+		const vimeoSearchLink = `https://vimeo.com/search?q=${titleNoSpaces}`;
 		return (
 			<Item>
 				{/* <Item.Image as='img' size='small' src='recycle.svg' /> */}
@@ -41,17 +44,25 @@ function Video({video}) {
 					<br />
 					<Item.Header >{title}</Item.Header>
 					<Item.Description>
-						Search for this title:
 						<a href={ytSearchLink} target='_blank' >
-							<Icon 
-								name='youtube' size='big' color='red' />
+							<Icon name='youtube' size='big' color='red' />
 						</a>
-						<Icon name='google' size='big' color='blue'/>
-						<Icon name='vimeo' size='big' color='teal'/>
+						<a href={googleSearchLink} target='_blank' >
+							<Icon name='google' size='big' color='blue'/>
+						</a>
+						<a href={vimeoSearchLink} target='_blank' >
+							<Icon name='vimeo' size='big' color='teal'/>
+						</a>
+						<Label pointing='left'>Search for this title</Label>
+						<br />
+						{/* <Button>View Archived Snapshot</Button> */}
 					</Item.Description>
-					{/* <Item.Extra>
-							<Icon color='green' name='check' /> 121 Votes
-							</Item.Extra> */}
+					<Item.Extra>
+						<a href={video.archive.url} target='_blank' >
+							<Icon name='camera' size='big' />
+						</a>
+						<Label pointing='left'>View Archived Snapshot</Label>
+					</Item.Extra> 
 				</Item.Content>
 			</Item>
 		)
