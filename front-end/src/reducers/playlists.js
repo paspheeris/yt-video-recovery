@@ -3,7 +3,8 @@ import {
     GET_PLAYLISTS,
     GET_VIDEOS_FROM_PLAYLISTS,
     SUCCESS,
-    FAILURE
+  FAILURE,
+	UPDATE_PLAYLISTS
 } from '.././actions/constants';
 
 function playlists(state = {}, action) {
@@ -30,8 +31,15 @@ function playlists(state = {}, action) {
                 } else return summary;
             })
         };
-        default:
-            return state;
+			case UPDATE_PLAYLISTS:
+				console.log('case UPDATE_PLAYLISTS', action);
+				// return action.payload.playlists;
+			return {
+				videos: action.payload.playlists,
+				metadata: action.payload.playlistsMetadata
+			}
+			default:
+					return state;
     }
 }
 export default playlists;

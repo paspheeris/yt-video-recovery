@@ -9,6 +9,7 @@ import NavBar from './components/NavBar';
 import LandingPage from './components/LandingPage';
 import Test from './components/Test';
 import Profile from './components/Profile';
+import About from './components/About';
 
 class App extends React.Component {
   render() {
@@ -21,6 +22,7 @@ class App extends React.Component {
             <Route exact={true} path="/" component={LandingPage} />
               <Route path="/profile/:state?/:access_token?/:token_type?/:expires_in?/:scope?" component={Profile} />
 							<Route path='/test' component={Test} />
+							<Route path='/about' component={About} />
               <YouTubeAuth />
             </Switch>
           </div>

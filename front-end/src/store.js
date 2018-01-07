@@ -8,9 +8,11 @@ import { promiseMiddleware } from './promiseMiddleware';
 // If there is data saved under 'auth' in localStorage, use it
 // in initialising the redux store
 const lsSavedAuth = loadState('auth');
+const lsSavedPls = loadState('playlists');
 
 const defaultState = {
-    auth: lsSavedAuth ? lsSavedAuth : undefined
+  auth: lsSavedAuth ? lsSavedAuth : undefined,
+	playlists: lsSavedPls ? lsSavedPls : undefined
 };
 
 const enhancers = compose(
@@ -25,6 +27,7 @@ store.subscribe(() => {
     // if we ever add any actions to the app that fire rapidly and
     // update the store quickly
     saveState('auth', store.getState().auth);
+  saveState('playlists', store.getState().playlists);
 });
 
 if (module.hot) {

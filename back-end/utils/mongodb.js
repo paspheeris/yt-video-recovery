@@ -102,12 +102,18 @@ function saveUpdatedVideos(userEmail, plId, videos) {
 	)
 		.catch(error => console.log(error));
 }
-function updateUser(userEmail, newUserObj) {
+function updateUserPls(userEmail, pls) {
 	return db('ytusers').update(
 		{ email: userEmail},
-		newUserObj
+		{ $set : {playlists: pls}}
 	)
 		.catch(error => console.log(error));
+}
+function savePlMetadata(playlistObjs, userEmail) {
+	return db('ytusers').update(
+		{ email: userEmail},
+		{ $set: {playlistsMetadata: playlistObjs}}
+	)
 }
 module.exports = {
 	saveTest,
@@ -117,6 +123,7 @@ module.exports = {
 	saveVideos,
 	getUser,
 	saveUpdatedVideos,
-	updateUser
+	updateUserPls,
+	savePlMetadata
 };
 

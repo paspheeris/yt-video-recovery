@@ -4,6 +4,8 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { parseHash } from '.././actions/auth';
+import { Icon, Image as ImageComponent, Item } from 'semantic-ui-react';
+import PlaylistItem from './PlaylistItem';
 
 class Profile extends React.Component {
 	constructor() {
@@ -24,6 +26,11 @@ class Profile extends React.Component {
 			<div>
 				Hello from the Profile
 				<button onClick={this.getDbCache}>getDbCache</button>
+				<Item.Group>
+					{this.props.plsMetadata && this.props.plsMetadata.map(( pl, i ) => {
+						return <PlaylistItem key={i} plMetadata={pl} />
+					})}
+				</Item.Group>
 			</div>
   )}
 
@@ -37,7 +44,8 @@ function mapStateToProps(state, ownProps) {
 		hash: ownProps.location.hash,
 		history: ownProps.history,
 		access_token: state.auth.access_token,
-		/* summaries: state.playlists.summaries*/
+		videos: state.playlists.videos,
+		plsMetadata: state.playlists.metadata
 	};
 }
 function mapDispatchToProps(dispatch) {

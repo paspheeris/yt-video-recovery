@@ -18,7 +18,8 @@ const { db,
 			  saveVideos,
 				getUser,
 				saveUpdatedVideos,
-				updateUser } = require('../utils/mongodb.js');
+				updateUserPls,
+				savePlMetadata } = require('../utils/mongodb.js');
 const { checkAvailability,
 				extractTitle } = require('../utils/internetArchive');
 function socketHandler(client) {
@@ -81,14 +82,16 @@ function socketHandler(client) {
 		})
 			.catch(error => console.log(error));
 
-		const playlistsWithAllVids = allPlaylists
-			.then(playlistRes => {
+		const playlistsWithAllVids = Promise.all([allPlaylists, validatedUser])
+				.then(([playlistRes, user]) => {
 				const playlistObjs = parsePlaylistRes(playlistRes);
+				savePlMetadata(playlistObjs, user.email);
+				// client.emit('pleasePrint', playlistObjs);
 				// Just look at the CS PL for now
-				const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
-				// const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
-				// const promiseArr = filtered.map(playlistObj => {
-				const promiseArr = playlistObjs.map(playlistObj => {
+				// const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
+				const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
+				const promiseArr = filtered.map(playlistObj => {
+				// const promiseArr = playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
 				});
 				// return Promise.all(promiseArr);
@@ -177,8 +180,8 @@ function socketHandler(client) {
 				// Just dumps the pls onto user as an array of anonymous object atm,
 				// might be more convenient to store them in the DB indexed by
 				// PL name or PL ID or something rather than just arr's of objs
-				user.playlists = pls;
-				updateUser(user.email, user);
+				// user.playlists = pls;
+				updateUserPls(user.email, pls);
 			})
 			.catch(error => console.log(error));
 
