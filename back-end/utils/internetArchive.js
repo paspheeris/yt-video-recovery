@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const he = require('he');
 
 function checkAvailability(videoId) {
 	// console.log(videoId);
@@ -70,8 +71,16 @@ function extractTitle(snapshotUrl) {
 			if (titleStart === -1 || titleEnd === -1) {
 				console.log('Error: error parsing the html res in extractTitle');
 			}
-			// console.log(title.trim());
 			const trimmedTitle = title.trim();
+			// Convert html encodings to their normal string form, eg takes
+			// &#39 and converts to a normal apostrophe
+			const htmlDecoded = he.decode(trimmedTitle);
+			// Remove duplicate contiguous spaces
+			const spacesRemoved = htmlDecoded.replace(/\s+/g, " ");
+			// Sometimes 'YouTube -' or '- YouTube', is at the start or end of the
+			// title, so remove it
+			const initial = spacesRemoved.replace('YouTube -', '');
+			const final = initial.replace('- YouTube', '');
 
 			// It's possible that even the earliest archive of a YT page is a
 			// snapshot of the page after the video had been deleted. In that case,
@@ -79,7 +88,7 @@ function extractTitle(snapshotUrl) {
 			// return some error rather than the scraped title, to be dealth with
 			// at the site calling this function
 			if(trimmedTitle === 'YouTube') return 'staleSnapshot';
-			else return trimmedTitle;
+			else return final;
 		})
 		.catch(error => {
 			// console.log(error);
