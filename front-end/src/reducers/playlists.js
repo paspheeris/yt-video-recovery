@@ -7,7 +7,8 @@ import {
 	PL_METADATA,
 	SINGLE_PLAYLIST,
   // FAILURE,
-	DB_CACHED_USER
+	DB_CACHED_USER,
+	SIGN_OUT
 } from '.././actions/constants';
 
 function playlists(state = {}, action) {
@@ -91,8 +92,11 @@ function playlists(state = {}, action) {
 					else return metadata;
 				})
 			};
-			default:
-					return state;
+		case SIGN_OUT:
+			return {};
+
+		default:
+			return state;
     }
 }
 export default playlists;

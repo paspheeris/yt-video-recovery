@@ -28,10 +28,13 @@ function users(state = {}, action) {
                 token_type,
                 expires_in,
                 expires_at: expires_in + action.payload.timeReceived,
-                scope
+              scope,
+							lastLogin: action.payload.timeReceived
             };
         case SIGN_OUT:
-            return {};
+      return {
+				lastLogin: state.lastLogin
+			};
         default:
             return state;
     }

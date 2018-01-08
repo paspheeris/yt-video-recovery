@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { parseHash } from '.././actions/auth';
 import { Item, Container,
-				 Header } from 'semantic-ui-react';
+				 Header, Message } from 'semantic-ui-react';
 import PlaylistItem from './PlaylistItem';
 import {Link} from 'react-router-dom';
 import recycle from '../recycle.svg';
@@ -24,11 +24,45 @@ class Profile extends React.Component {
 		// Redirect from the url with the hash to the clean /profile url
 		this.props.history.push('/profile');
 	}
+	componentDidUpdate(prevProps, prevState) {
+		// Perform fetches to the backend once the access token comes through
+		if (!prevProps.access_token && this.props.access_token) {
+			const { lastLogin } = this.props;
+			// If the last login was within 12hrs, just fetch data cached in the DB
+			if(lastLogin && Date.now() - lastLogin < 43200000) {
+				console.log('emiting getDbCache in Profile componentDidMount');
+				socket.emit('getDbCache', this.props.access_token);
+			}
+			// Else, if it's the first login, or firtst in 12hrs, do a full req
+			else {
+				console.log('emitting initialLogin in Profile componentDidMount');
+				socket.emit('initialLogin', this.props.access_token);
+			}
+			}
+	}
+	isLoggedIn = _ => {
+		return this.props.access_token;
+	}
+	sessionIsExpired = _ => {
+		return this.props.access_token && this.props.expiresAt < Date.now();
+	}
 	render() {
+		if (!this.isLoggedIn()) return (
+			<Message warning>
+				<Message.Header>Please Login.</Message.Header>
+				<p>You must be logged in to view your profile.</p>
+			</Message>
+		)
 		return (
 			<Container>
 				Hello from the Profile
 				<button onClick={this.getDbCache}>getDbCache</button>
+				{this.sessionIsExpired() &&
+					<Message warning>
+						<Message.Header>Session Expired.</Message.Header>
+						<p>Please login again to update your profile.</p>
+					</Message>
+				}
 			<Header as='h2' >Your Playlists</Header>
 				<Item.Group divided>
 					{this.props.plsMetadata && this.props.plsMetadata.map(( pl, i ) => {
@@ -75,9 +109,11 @@ function mapStateToProps(state, ownProps) {
 	return {
 		hash: ownProps.location.hash,
 		history: ownProps.history,
-		access_token: state.auth.access_token,
 		videos: state.playlists.videos,
 		plsMetadata: metadata,
+		access_token: state.auth.access_token,
+		expiresAt: state.auth.expires_at,
+		lastLogin: state.auth.lastLogin,
 		deletedCount,
 		recoveredCount
 	};
