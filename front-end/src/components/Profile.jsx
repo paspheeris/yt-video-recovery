@@ -8,6 +8,7 @@ import { Icon, Item, Container,
 				 Header } from 'semantic-ui-react';
 import PlaylistItem from './PlaylistItem';
 import {Link} from 'react-router-dom';
+import recycle from '../recycle.svg';
 
 class Profile extends React.Component {
 	constructor() {
@@ -37,7 +38,8 @@ class Profile extends React.Component {
 			<Header as='h2' >Removed Videos</Header>
 			<Item.Group divided>
 				<Item as={Link} to='/playlist/recoveredTitles'>
-					<Item.Image size='small' src='fds' />
+					{/* <Item.Image size='small' src='recycle' /> */}
+					<img className='ui small image' src={recycle} alt='recycle-symbol' />
 					<Item.Content>
 						<Item.Header >All Recovered Titles</Item.Header>
 						<Item.Description>asdf</Item.Description>

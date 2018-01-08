@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { Item,
 				 Header, Container } from 'semantic-ui-react';
 import Video from './Video';
+import {hasRecoveredTitle} from '.././utils/yt';
 
 function Playlist({plTitle, videos}) {
 	return (
@@ -28,8 +29,7 @@ function mapStateToProps(state, ownProps) {
 		plTitle = 'Recovered Titles';
 		videos = state.playlists.videos.reduce((accum, pl) => {
 			const withTitles = pl.filter(vid => {
-				return vid.archive && vid.archive.available &&
-					vid.archive.title !== 'staleSnapshot';
+				return hasRecoveredTitle(vid);
 			})
 			return accum.concat(withTitles);
 		}, []);

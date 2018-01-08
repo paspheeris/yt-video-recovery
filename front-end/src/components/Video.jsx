@@ -1,37 +1,48 @@
 import React from 'react';
-import { Icon, Item, Label} from 'semantic-ui-react';
+import { Icon, Item, Label, Image, Visibility} from 'semantic-ui-react';
+import {hasRecoveredTitle} from '.././utils/yt';
 import recycle from '../recycle.svg';
 
-function Video({video}) {
-	/* if(video.archive === undefined && !video.snippet.'
-		 vids with a title of 'Private video are showing up here... one in the tup
-		 playlist'
-		 console.log(video);
-		 }*/
-	if(video.archive === undefined && video.snippet.thumbnails) {
+
+class Video extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			imgUrl: 'none'
+		}
+	}
+  onScreenHandler = () => {
+		this.setState({imgUrl: this.props.video.snippet.thumbnails.default.url})
+		/* console.log(this);*/
+  }
+	render() {
+		const video = this.props.video;
+	if(video.archive === undefined && video.snippet &&
+		 video.snippet.thumbnails && video.snippet.thumbnails.medium.url) {
+		/* console.log(video);*/
 		// Non-removed video
 		const ytLink =
 			`https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`;
 
 		return (
 			<Item>
-				<Item.Image as='a' href={ytLink} target='_blank' size='small' src={video.snippet.thumbnails.medium.url} />
+				<Visibility fireOnMount={true} onTopVisible={this.onScreenHandler} />
+				<Item.Image  as='a' href={ytLink} target='_blank' size='small' src={this.state.imgUrl} />
+				{/* <Image src={'kj'} alt='video-icon'/> */}
 				<Item.Content>
 					<Item.Header as='a' href={ytLink} target='_blank' >{video.snippet.title}</Item.Header>
-					{/* <Item.Description>asdf</Item.Description> */}
-					{/* <Item.Extra>
-							<Icon color='green' name='check' /> 121 Votes
-							</Item.Extra> */}
 				</Item.Content>
 			</Item>
 		)
-	} else if (video.archive && video.archive.available === true
-						 && video.archive.title !== 'staleSnapshot') {
+	} else if (hasRecoveredTitle(video)) {
 		// Removed video, but one for which a title was recovered
 		const title = video.archive.title;
+		if(title === null) console.log(video);
 		const titleNoSpaces = title.split(' ').join('+');
-		const ytSearchLink = `https://www.youtube.com/results?search_query=${titleNoSpaces}`;
-		const googleSearchLink = `https://www.google.com/search?q=${titleNoSpaces}`;
+		const ytSearchLink =
+			`https://www.youtube.com/results?search_query=${titleNoSpaces}`;
+		const googleSearchLink =
+			`https://www.google.com/search?q=${titleNoSpaces}`;
 		const vimeoSearchLink = `https://vimeo.com/search?q=${titleNoSpaces}`;
 		return (
 			<Item>
@@ -68,19 +79,6 @@ function Video({video}) {
 			false
 		)
 	}
-	/* return (
-		 <Item as={Link} to={`/playlist/${plMetadata.title}`}>
-		 <Item.Image size='small' src={plMetadata.thumbnail.url} />
-
-		 <Item.Content>
-		 <Item.Header >{plMetadata.title}</Item.Header>
-		 <Item.Description>asdf</Item.Description>
-		 <Item.Extra>
-		 <Icon color='green' name='check' /> 121 Votes
-		 </Item.Extra>
-		 </Item.Content>
-		 </Item>
-		 )*/
+	}
 }
-
 export default Video;

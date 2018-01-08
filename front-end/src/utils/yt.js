@@ -8,3 +8,9 @@ export function extractPlaylistsInfo(apiRes) {
         };
     });
 }
+export function hasRecoveredTitle(videoObj) {
+	// Returns a bool, indicating whether a video has a recovered title
+	return videoObj.archive && videoObj.archive.available &&
+		videoObj.archive.title !== 'staleSnapshot' &&
+		videoObj.archive.title !== null;
+}

@@ -90,8 +90,8 @@ function socketHandler(client) {
 				// Just look at the CS PL for now
 				// const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
 				const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
-				const promiseArr = filtered.map(playlistObj => {
-				// const promiseArr = playlistObjs.map(playlistObj => {
+				// const promiseArr = filtered.map(playlistObj => {
+				const promiseArr = playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
 				});
 				// return Promise.all(promiseArr);
