@@ -9,7 +9,7 @@ import {
     parseAuthHash
 } from '.././utils/auth';
 
-function users(state = {}, action) {
+function users(state = {lastLogin: 0}, action) {
     switch (action.type) {
         case authActions.PARSE_HASH:
             console.log(action.payload);
@@ -29,6 +29,7 @@ function users(state = {}, action) {
                 expires_in,
                 expires_at: expires_in + action.payload.timeReceived,
               scope,
+							msSinceLastLogin: action.payload.timeReceived - state.lastLogin,
 							lastLogin: action.payload.timeReceived
             };
         case SIGN_OUT:

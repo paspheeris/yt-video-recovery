@@ -28,8 +28,10 @@ class Profile extends React.Component {
 		// Perform fetches to the backend once the access token comes through
 		if (!prevProps.access_token && this.props.access_token) {
 			const { lastLogin } = this.props;
+			console.log('lastLogin', lastLogin);
 			// If the last login was within 12hrs, just fetch data cached in the DB
-			if(lastLogin && Date.now() - lastLogin < 43200000) {
+			/* 43200000*/
+			if(this.props.msSinceLastLogin < 1500) {
 				console.log('emiting getDbCache in Profile componentDidMount');
 				socket.emit('getDbCache', this.props.access_token);
 			}
@@ -114,6 +116,7 @@ function mapStateToProps(state, ownProps) {
 		access_token: state.auth.access_token,
 		expiresAt: state.auth.expires_at,
 		lastLogin: state.auth.lastLogin,
+		msSinceLastLogin: state.auth.msSinceLastLogin,
 		deletedCount,
 		recoveredCount
 	};

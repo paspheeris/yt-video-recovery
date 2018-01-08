@@ -72,7 +72,24 @@ function playlists(state = {}, action) {
 			console.log('SINGLE_PLAYLIST in reducer', action);
 			const newPlaylist = action.payload;
 			const newPlId = getPlId(newPlaylist);
-			return {
+			if (!state.videos || state.videos.length === 0) {
+				// The first video to return needs to be handled differently
+				return {
+					videos: [ newPlaylist ],
+					metadata: state.metadata.map(metadata => {
+						if (metadata.id === newPlId) {
+							return {
+								...metadata,
+								videoCount: newPlaylist.length,
+								deletedCount: getDeletedVids(newPlaylist).length,
+								recoveredCount: getRecoveredVids(newPlaylist).length
+							};
+						}
+						else return metadata;
+					})
+				}
+			}
+			else return {
 				videos: state.videos.map(pl => {
 					// Replace the matching old PL with the new PL in payload,
 					// otherwise just return the old PL
