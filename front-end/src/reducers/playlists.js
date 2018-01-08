@@ -1,5 +1,6 @@
 import {extractPlaylistsInfo, getPlId,
-				getDeletedVids, getRecoveredVids} from '.././utils/yt';
+				getDeletedVids, getRecoveredVids,
+			  mergePlsArr } from '.././utils/yt';
 import {
     GET_PLAYLISTS,
     GET_VIDEOS_FROM_PLAYLISTS,
@@ -90,13 +91,7 @@ function playlists(state = {}, action) {
 				}
 			}
 			else return {
-				videos: state.videos.map(pl => {
-					// Replace the matching old PL with the new PL in payload,
-					// otherwise just return the old PL
-					const plId = getPlId(pl);
-					if (plId === newPlId) return newPlaylist;
-					else return pl;
-				}),
+				videos: mergePlsArr(state.videos, newPlaylist),
 				metadata: state.metadata.map(metadata => {
 					if (metadata.id === newPlId) {
 						return {
