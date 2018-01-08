@@ -1,10 +1,13 @@
-import {extractPlaylistsInfo} from '.././utils/yt';
+import {extractPlaylistsInfo, getPlId,
+				getDeletedVids, getRecoveredVids} from '.././utils/yt';
 import {
     GET_PLAYLISTS,
     GET_VIDEOS_FROM_PLAYLISTS,
     SUCCESS,
+	PL_METADATA,
+	SINGLE_PLAYLIST,
   // FAILURE,
-	UPDATE_PLAYLISTS
+	DB_CACHED_USER
 } from '.././actions/constants';
 
 function playlists(state = {}, action) {
@@ -31,27 +34,20 @@ function playlists(state = {}, action) {
                 } else return summary;
             })
         };
-			case UPDATE_PLAYLISTS:
-				console.log('case UPDATE_PLAYLISTS', action);
+			case DB_CACHED_USER:
+				console.log('case DB_CACHED_USER', action);
 				// return action.payload.playlists;
 			const metadata = action.payload.playlistsMetadata.map( plMeta  => {
 				// Find the corresponding list of videos
 				const matchingPl = action.payload.playlists.find(pl => {
-					// console.log('PL: ', pl);
-					// console.log('plMeta: ', plMeta);
 					return pl[0].snippet.playlistId === plMeta.id;
 				});
 
 				// No match found, just return what's already there, without counts
 				if(!matchingPl) return plMeta;
 
-				const deletedVids = matchingPl.filter(vid => {
-					return vid.archive !== undefined;
-				});
-				const recoveredTitles = deletedVids.filter(vid => {
-					return (vid.archive && vid.archive.available
-									&& vid.archive.title !== 'staleSnapshot');
-				});
+				const deletedVids = getDeletedVids(matchingPl);
+				const recoveredTitles = getRecoveredVids(deletedVids);
 				return {
 					...plMeta,
 					videoCount: matchingPl.length,
@@ -62,6 +58,38 @@ function playlists(state = {}, action) {
 			return {
 				videos: action.payload.playlists,
 				metadata
+			};
+		case PL_METADATA:
+			// console.log('PL_METADATA in reducer', action);
+			// Not doing deleted/recovered count here for now, as they'll be set
+			// as the individual PLs come in
+			return {
+				...state,
+				metadata: action.payload
+			};
+		case SINGLE_PLAYLIST:
+			console.log('SINGLE_PLAYLIST in reducer', action);
+			const newPlaylist = action.payload;
+			const newPlId = getPlId(newPlaylist);
+			return {
+				videos: state.videos.map(pl => {
+					// Replace the matching old PL with the new PL in payload,
+					// otherwise just return the old PL
+					const plId = getPlId(pl);
+					if (plId === newPlId) return newPlaylist;
+					else return pl;
+				}),
+				metadata: state.metadata.map(metadata => {
+					if (metadata.id === newPlId) {
+						return {
+							...metadata,
+							videoCount: newPlaylist.length,
+							deletedCount: getDeletedVids(newPlaylist).length,
+							recoveredCount: getRecoveredVids(newPlaylist).length
+						};
+					}
+					else return metadata;
+				})
 			};
 			default:
 					return state;

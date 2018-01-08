@@ -4,7 +4,7 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { parseHash } from '.././actions/auth';
-import { Icon, Item, Container,
+import { Item, Container,
 				 Header } from 'semantic-ui-react';
 import PlaylistItem from './PlaylistItem';
 import {Link} from 'react-router-dom';
@@ -38,17 +38,18 @@ class Profile extends React.Component {
 			<Header as='h2' >Removed Videos</Header>
 			<Item.Group divided>
 				<Item as={Link} to='/playlist/recoveredTitles'>
-					{/* <Item.Image size='small' src='recycle' /> */}
 					<img className='ui small image' src={recycle} alt='recycle-symbol' />
 					<Item.Content>
 						<Item.Header >All Recovered Titles</Item.Header>
-						<Item.Description>asdf</Item.Description>
-						<Item.Extra>
-							<Icon color='green' name='check' /> 121 Votes
-						</Item.Extra>
+						<Item.Description>
+							<span>Deleted Videos: {this.props.deletedCount}</span>
+							<br />
+							<span>Recovered Titles: {this.props.recoveredCount}</span>
+						</Item.Description>
 					</Item.Content>
 				</Item>
 			</Item.Group>
+			<br />
 			</Container>
   )}
 
@@ -58,12 +59,27 @@ class Profile extends React.Component {
 }
 
 function mapStateToProps(state, ownProps) {
+	const { metadata } = state.playlists;
+	let deletedCount = 0;
+	let recoveredCount = 0;
+	if (metadata) {
+		const reduced = metadata.reduce((accum, pl) => {
+			if(!pl.deletedCount) return accum;
+			accum.deletedCount += pl.deletedCount;
+			accum.recoveredCount += pl.recoveredCount;
+			return accum;
+		}, {deletedCount: 0, recoveredCount: 0})
+		deletedCount = reduced.deletedCount;
+		recoveredCount = reduced.recoveredCount;
+	}
 	return {
 		hash: ownProps.location.hash,
 		history: ownProps.history,
 		access_token: state.auth.access_token,
 		videos: state.playlists.videos,
-		plsMetadata: state.playlists.metadata
+		plsMetadata: metadata,
+		deletedCount,
+		recoveredCount
 	};
 }
 function mapDispatchToProps(dispatch) {

@@ -74,6 +74,8 @@ function socketHandler(client) {
 
 	client.on('initialLogin', token => {
 		const allPlaylists = getPlaylists(token);
+		allPlaylists.then(plMetadata => {
+		});
 		const validatedUser = validateAccessToken(token);
 
 		const userInDb = validatedUser.then(validationRes => {
@@ -85,13 +87,15 @@ function socketHandler(client) {
 		const playlistsWithAllVids = Promise.all([allPlaylists, validatedUser])
 				.then(([playlistRes, user]) => {
 				const playlistObjs = parsePlaylistRes(playlistRes);
+				// Dispatch PL metadata to the front end, for display in Profile
+				client.emit('plMetadata', playlistObjs);
+					// Then save the metadata in the DB
 				savePlMetadata(playlistObjs, user.email);
-				// client.emit('pleasePrint', playlistObjs);
 				// Just look at the CS PL for now
 				// const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
 				const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
-				// const promiseArr = filtered.map(playlistObj => {
-				const promiseArr = playlistObjs.map(playlistObj => {
+				const promiseArr = filtered.map(playlistObj => {
+				// const promiseArr = playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
 				});
 				// return Promise.all(promiseArr);
@@ -158,9 +162,9 @@ function socketHandler(client) {
 						return Promise.all(vidsPromises);
 					})
 						.then(vids => {
-							const { playlistId } = vids[0].snippet;
-							saveUpdatedVideos(userObj.email, playlistId, vids);
-							// client.emit('pleasePrint', vids);
+							// const { playlistId } = vids[0].snippet;
+							// saveUpdatedVideos(userObj.email, playlistId, vids);
+							client.emit('singlePlaylist', vids);
 						})
 				})
 		})

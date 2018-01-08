@@ -14,3 +14,14 @@ export function hasRecoveredTitle(videoObj) {
 		videoObj.archive.title !== 'staleSnapshot' &&
 		videoObj.archive.title !== null;
 }
+export function getPlId(videos) {
+	// returns the Pl Id that an array of videos belong to, based on the
+	// first video
+	return videos[0].snippet.playlistId;
+}
+export function getDeletedVids(pl) {
+	return pl.filter(vid => vid.archive !== undefined);
+}
+export function getRecoveredVids(pl) {
+	return pl.filter(vid => hasRecoveredTitle(vid));
+}
