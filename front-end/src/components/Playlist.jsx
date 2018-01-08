@@ -20,18 +20,33 @@ function Playlist({plTitle, videos}) {
 }
 
 function mapStateToProps(state, ownProps) {
-	const plTitle = ownProps.match.params[0];
-	const plMeta = state.playlists.metadata.find(pl => pl.title === plTitle);
-	const plId = plMeta.id;
-	const videos = state.playlists.videos.find(pl => {
-		return pl[0].snippet.playlistId === plId;
-	});
+	let plTitle = ownProps.match.params[0];
+	let videos;
 
+	if(plTitle === 'recoveredTitles') {
+		// Only recovered titles 'playlist'
+		plTitle = 'Recovered Titles';
+		videos = state.playlists.videos.reduce((accum, pl) => {
+			const withTitles = pl.filter(vid => {
+				return vid.archive && vid.archive.available &&
+					vid.archive.title !== 'staleSnapshot';
+			})
+			return accum.concat(withTitles);
+		}, []);
+	}
+	else {
+		// Normal playlist
+		const plMeta = state.playlists.metadata.find(pl => pl.title === plTitle);
+		const plId = plMeta.id;
+		videos = state.playlists.videos.find(pl => {
+			return pl[0].snippet.playlistId === plId;
+		});
+	}
 	return {
 		/* hash: ownProps.location.hash,*/
 		plTitle,
-		plId,
-		plMeta,
+		// plId,
+		// plMeta,
 		videos
 	};
 }
