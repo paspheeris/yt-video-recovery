@@ -3,7 +3,7 @@ import {
     GET_PLAYLISTS,
     GET_VIDEOS_FROM_PLAYLISTS,
     SUCCESS,
-  FAILURE,
+  // FAILURE,
 	UPDATE_PLAYLISTS
 } from '.././actions/constants';
 

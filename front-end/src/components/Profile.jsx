@@ -4,8 +4,8 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { parseHash } from '.././actions/auth';
-import { Icon, Image as ImageComponent, Item, Container,
-				 Header, Segment } from 'semantic-ui-react';
+import { Icon, Item, Container,
+				 Header } from 'semantic-ui-react';
 import PlaylistItem from './PlaylistItem';
 import {Link} from 'react-router-dom';
 
@@ -39,7 +39,7 @@ class Profile extends React.Component {
 				<Item as={Link} to='/playlist/recoveredTitles'>
 					<Item.Image size='small' src='fds' />
 					<Item.Content>
-						<Item.Header as='a'>All Recovered Titles</Item.Header>
+						<Item.Header >All Recovered Titles</Item.Header>
 						<Item.Description>asdf</Item.Description>
 						<Item.Extra>
 							<Icon color='green' name='check' /> 121 Votes

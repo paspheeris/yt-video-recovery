@@ -1,5 +1,4 @@
 import { createStore, compose, applyMiddleware } from 'redux';
-import Redux from 'redux';
 import reduxImmutableStateInvariant from 'redux-immutable-state-invariant';
 import rootReducer from './reducers/root';
 import thunk from 'redux-thunk';

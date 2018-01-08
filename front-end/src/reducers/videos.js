@@ -1,13 +1,14 @@
 import {
     GET_VIDEOS_FROM_PLAYLISTS,
     SUCCESS,
-    FAILURE
+    // FAILURE
 } from '.././actions/constants';
 
 function videos(state ={}, action) {
     switch(action.type) {
     case(GET_VIDEOS_FROM_PLAYLISTS + SUCCESS):
         console.log(action);
+			break;
     default:
     return state;
     }

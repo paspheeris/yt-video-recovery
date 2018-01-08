@@ -2,9 +2,8 @@ import React from 'react';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Icon, Image as ImageComponent, Item,
+import { Item,
 				 Header, Container } from 'semantic-ui-react';
-import {Link} from 'react-router-dom';
 import Video from './Video';
 
 function Playlist({plTitle, videos}) {
@@ -13,7 +12,7 @@ function Playlist({plTitle, videos}) {
 			<Header as='h1' >{plTitle}</Header>
 				<Item.Group divided>
 					{videos && videos.map(( video, i ) => {
-						 return <Video video={video} key={i}/>
+						 return <Video video={video} key={i} />
 					})}
 				</Item.Group>
 		</Container>

@@ -1,7 +1,5 @@
 import React from 'react';
-import { Icon, Image as ImageComponent, Item,
-				Label, Button} from 'semantic-ui-react';
-import {Link} from 'react-router-dom';
+import { Icon, Item, Label} from 'semantic-ui-react';
 import recycle from '../recycle.svg';
 
 function Video({video}) {
@@ -37,8 +35,7 @@ function Video({video}) {
 		const vimeoSearchLink = `https://vimeo.com/search?q=${titleNoSpaces}`;
 		return (
 			<Item>
-				{/* <Item.Image as='img' size='small' src='recycle.svg' /> */}
-				<img className='ui small image' src={recycle} />
+				<img className='ui small image' src={recycle} alt='recycle-symbol' />
 				<Item.Content>
 					<Item.Header >[Recovered Video]</Item.Header>
 					<br />
@@ -55,7 +52,6 @@ function Video({video}) {
 						</a>
 						<Label pointing='left'>Search for this title</Label>
 						<br />
-						{/* <Button>View Archived Snapshot</Button> */}
 					</Item.Description>
 					<Item.Extra>
 						<a href={video.archive.url} target='_blank' >
