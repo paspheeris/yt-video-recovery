@@ -5,7 +5,8 @@ import {Link} from 'react-router-dom';
 function PlaylistItem({plMetadata}) {
 	const { deletedCount } = plMetadata;
 	return (
-		<Item as={Link} to={`/playlist/${plMetadata.title}`}>
+		<Item as={Link} to={`/playlist/${plMetadata.title}`}
+					onClick={scrollToTop}>
 				<Item.Image size='small' src={plMetadata.thumbnail.url} />
 
 				<Item.Content>
@@ -24,6 +25,9 @@ function PlaylistItem({plMetadata}) {
 				</Item.Content>
 			</Item>
 	)
+}
+const scrollToTop = _ => {
+	window.scrollTo(0, 0);
 }
 
 export default PlaylistItem;
