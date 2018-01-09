@@ -20,9 +20,9 @@ class Profile extends React.Component {
 		if(this.props.hash) {
 			// Dispatch the hash to be parsed and stored
 			this.props.parseHash(this.props.hash, Date.now());
+			// Redirect from the url with the hash to the clean /profile url
+			this.props.history.push('/profile');
 		}
-		// Redirect from the url with the hash to the clean /profile url
-		this.props.history.push('/profile');
 	}
 	componentDidUpdate(prevProps, prevState) {
 		// Perform fetches to the backend once the access token comes through

@@ -18,14 +18,15 @@ class App extends React.Component {
       <Provider store={store}>
         <BrowserRouter>
           <div>
-            <NavBar />
+            {/* <NavBar /> */}
+						<Route path='/' component={NavBar} />
             <Switch>
-            <Route exact={true} path="/" component={LandingPage} />
-              <Route path="/profile/:state?/:access_token?/:token_type?/:expires_in?/:scope?" component={Profile} />
+							<Route exact path="/" component={LandingPage} />
+							<Route path="/profile/:state?/:access_token?/:token_type?/:expires_in?/:scope?" component={Profile} />
 							<Route path='/test' component={Test} />
 							<Route path='/about' component={About} />
 							<Route path='/playlist/*' component={Playlist} />
-              <YouTubeAuth />
+							{/* <YouTubeAuth /> */}
             </Switch>
           </div>
         </BrowserRouter>

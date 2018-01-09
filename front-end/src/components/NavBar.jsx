@@ -12,8 +12,10 @@ class NavBar extends React.Component {
 		return this.props.access_token && this.props.expiresAt > Date.now();
 	}
 	logInOrOut = _ => {
-		if(this.isLoggedIn()) this.props.signOut();
-		else oauthSignIn();
+		if(this.isLoggedIn()) {
+			this.props.signOut();
+			this.props.history.push('/');
+		} else oauthSignIn();
 	}
   render() {
 		const { activeItem } = this.props;
