@@ -2,7 +2,8 @@ const fetch = require('node-fetch');
 const he = require('he');
 
 function checkAvailability(videoId) {
-	// console.log(videoId);
+	console.log('performing availablity check');
+	console.log(videoId);
 	const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
 	const endpoint = `http://web.archive.org/cdx/search/cdx?url=${videoUrl}&output=json`
 
@@ -50,7 +51,8 @@ function checkAvailability(videoId) {
 }
 
 function extractTitle(snapshotUrl) {
-	// console.log(snapshotUrl);
+	console.log('performing title extraction');
+	console.log(snapshotUrl);
 	return fetch(snapshotUrl)
 		.then(res => {
 			if (res.status !== 200) {

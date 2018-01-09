@@ -49,11 +49,13 @@ class Profile extends React.Component {
 		return this.props.access_token && this.props.expiresAt < Date.now();
 	}
 	render() {
-		if (!this.isLoggedIn()) return (
-			<Message warning>
-				<Message.Header>Please Login.</Message.Header>
-				<p>You must be logged in to view your profile.</p>
-			</Message>
+			if (!this.isLoggedIn()) return (
+				<Container>
+					<Message warning>
+						<Message.Header>Please Login.</Message.Header>
+						<p>You must be logged in to view your profile.</p>
+					</Message>
+				</Container>
 		)
 		return (
 			<Container>

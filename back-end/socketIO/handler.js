@@ -103,17 +103,45 @@ function socketHandler(client) {
 			})
 			.catch(error => console.log(error));
 
-		const allVidsWithArchiveStatus = playlistsWithAllVids
-			.then(plsWithAllVids => {
+		const allVidsWithArchiveStatus = Promise.all(
+			[playlistsWithAllVids, userInDb])
+					.then(( [ plsWithAllVids, userInDb ] ) => {
 				return plsWithAllVids.map(plPromise => {
 					return plPromise.then(pl => {
 						// client.emit('pleasePrint', pl);
+						// client.emit('pleasePrint', userInDb);
+						// Filter the matching saved PL in the db, for videos that have
+						// been deleted and potentially already looked up on the internet
+						// archive, so that a second lookup doesnt need to be done
+						const plId = pl[0].snippet.playlistId;
+						const matchingSavedPl = userInDb.playlists.find(dbPl => {
+							return dbPl[0].snippet.playlistId === plId;
+						});
+						let savedDeletedVids;
+						if(matchingSavedPl !== undefined) {
+							savedDeletedVids = matchingSavedPl.filter(vid => {
+								return vidIsDeleted(vid);
+							});
+						}
 						return pl.map(( vid, i ) => {
 							const { videoId } = vid.snippet.resourceId;
 							if(vidIsDeleted(vid)) {
-								const availPromise = checkAvailability(videoId);
-								return Object.assign({}, vid,
-																		 {archive: availPromise});
+								let alreadyFetched;
+								if(savedDeletedVids !== undefined) {
+									// Search the matching saved PL, and if a matching video
+									// with an archive field is found, just return it, as theres
+									// no need to hit the interet archive again
+									alreadyFetched = savedDeletedVids.find(savedVid => {
+										return (savedVid.archive &&
+											      savedVid.snippet.resourceId.videoId === videoId);
+									});
+								}
+								if(alreadyFetched !== undefined) return alreadyFetched;
+								else {
+									const availPromise = checkAvailability(videoId);
+									return Object.assign({}, vid,
+																			 {archive: availPromise});
+								}
 							}
 							else return vid;
 						});
@@ -128,6 +156,7 @@ function socketHandler(client) {
 					// client.emit('pleasePrint', pl);
 					return pl.map(vid => {
 						if (vid.archive === undefined) return vid;
+						else if(!vid.archive.then) return vid;
 						else {
 							return vid.archive.then(status => {
 								if(status.available === false
