@@ -19,9 +19,6 @@ function PlaylistItem({plMetadata}) {
 						{ deletedCount > 0 &&
 							<span>Recovered Titles: {plMetadata.recoveredCount}</span> }
 					</Item.Description>
-					<Item.Extra>
-						<Icon color='green' name='check' /> 121 Votes
-					</Item.Extra>
 				</Item.Content>
 			</Item>
 	)

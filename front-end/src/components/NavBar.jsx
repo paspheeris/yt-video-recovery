@@ -1,6 +1,6 @@
 import React from 'react';
 import { oauthSignIn } from '.././utils/auth';
-import { Menu } from 'semantic-ui-react';
+import { Menu, Icon } from 'semantic-ui-react';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -20,7 +20,7 @@ class NavBar extends React.Component {
   render() {
 		const { activeItem } = this.props;
     return (
-			<Menu>
+			<Menu fluid className='navbar'>
         <Menu.Item name='home' as={Link} active={activeItem === '/'} to='/'>
 					Home
         </Menu.Item>
@@ -42,7 +42,7 @@ class NavBar extends React.Component {
           </Menu.Item>
 
           <Menu.Item name='github' href='https://github.com' target='_blank'>
-           Github
+           <Icon name='github' />
           </Menu.Item>
         </Menu.Menu>
       </Menu>

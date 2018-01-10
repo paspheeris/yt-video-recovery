@@ -48,6 +48,9 @@ class Profile extends React.Component {
 	sessionIsExpired = _ => {
 		return this.props.access_token && this.props.expiresAt < Date.now();
 	}
+	scrollToTop = _ => {
+		window.scrollTo(0, 0);
+	}
 	render() {
 			if (!this.isLoggedIn()) return (
 				<Container>
@@ -75,7 +78,8 @@ class Profile extends React.Component {
 				</Item.Group>
 			<Header as='h2' >Removed Videos</Header>
 			<Item.Group divided>
-				<Item as={Link} to='/playlist/recoveredTitles'>
+				<Item as={Link} to='/playlist/recoveredTitles'
+					onClick={this.scrollToTop}>
 					<img className='ui small image' src={recycle} alt='recycle-symbol' />
 					<Item.Content>
 						<Item.Header >All Recovered Titles</Item.Header>
