@@ -1,7 +1,6 @@
 import React from 'react';
 import {
 	Header,
-	Container,
 	Grid,
 	Image
 } from 'semantic-ui-react';
@@ -24,7 +23,7 @@ class LandingPage extends React.Component {
 							Hate losing your favorite videos?
 						</Header>
 						<p>
-							When a video is removed from YouTube, all trace of it is also
+							When a video is removed from YouTube, all associated data is also
 							removed. Even if the video was saved in your favorites or in
 							a playlist, the title is gone, and you have no chance to find
 							a duplicate upload.

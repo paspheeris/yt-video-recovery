@@ -31,7 +31,8 @@ class Profile extends React.Component {
 			console.log('lastLogin', lastLogin);
 			// If the last login was within 12hrs, just fetch data cached in the DB
 			/* 43200000*/
-			if(this.props.msSinceLastLogin < 1500) {
+			/* 1500 */
+			if(this.props.msSinceLastLogin < 43200000 ) {
 				console.log('emiting getDbCache in Profile componentDidMount');
 				socket.emit('getDbCache', this.props.access_token);
 			}

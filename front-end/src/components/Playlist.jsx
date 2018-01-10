@@ -27,26 +27,27 @@ function mapStateToProps(state, ownProps) {
 	if(plTitle === 'recoveredTitles') {
 		// Only recovered titles 'playlist'
 		plTitle = 'Recovered Titles';
-		videos = state.playlists.videos.reduce((accum, pl) => {
-			const withTitles = pl.filter(vid => {
-				return hasRecoveredTitle(vid);
-			})
-			return accum.concat(withTitles);
-		}, []);
+		if(state.playlists.videos) {
+			videos = state.playlists.videos.reduce((accum, pl) => {
+				const withTitles = pl.filter(vid => {
+					return hasRecoveredTitle(vid);
+				})
+				return accum.concat(withTitles);
+			}, []);
+		}
 	}
 	else {
 		// Normal playlist
-		const plMeta = state.playlists.metadata.find(pl => pl.title === plTitle);
-		const plId = plMeta.id;
-		videos = state.playlists.videos.find(pl => {
-			return pl[0].snippet.playlistId === plId;
-		});
+		if(state.playlists.metadata && state.playlists.videos) {
+			const plMeta = state.playlists.metadata.find(pl => pl.title === plTitle);
+			const plId = plMeta.id;
+			videos = state.playlists.videos.find(pl => {
+				return pl[0].snippet.playlistId === plId;
+			});
+		}
 	}
 	return {
-		/* hash: ownProps.location.hash,*/
 		plTitle,
-		// plId,
-		// plMeta,
 		videos
 	};
 }

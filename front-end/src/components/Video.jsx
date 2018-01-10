@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Item, Label, Image, Visibility} from 'semantic-ui-react';
+import { Icon, Item, Label, Visibility} from 'semantic-ui-react';
 import {hasRecoveredTitle} from '.././utils/yt';
 import recycle from '../recycle.svg';
 

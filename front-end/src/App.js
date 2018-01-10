@@ -1,5 +1,4 @@
 import React from 'react';
-import YouTubeAuth from './components/YouTubeAuth';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import './App.css';
@@ -26,7 +25,6 @@ class App extends React.Component {
 							<Route path='/test' component={Test} />
 							<Route path='/about' component={About} />
 							<Route path='/playlist/*' component={Playlist} />
-							{/* <YouTubeAuth /> */}
             </Switch>
           </div>
         </BrowserRouter>

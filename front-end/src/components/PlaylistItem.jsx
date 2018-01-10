@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Item } from 'semantic-ui-react';
+import { Item } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 
 function PlaylistItem({plMetadata}) {
