@@ -41,7 +41,9 @@ class NavBar extends React.Component {
 						{this.isLoggedIn() ? 'Sign Out' : 'Sign In'}
           </Menu.Item>
 
-          <Menu.Item name='github' href='https://github.com' target='_blank'>
+          <Menu.Item name='github'
+						href='https://github.com/paspheeris/yt-video-recovery'
+						target='_blank'>
            <Icon name='github' />
           </Menu.Item>
         </Menu.Menu>
