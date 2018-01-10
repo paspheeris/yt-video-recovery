@@ -28,5 +28,6 @@ socket.on('singlePlaylist', singlePlaylist => store.dispatch({
 	type: SINGLE_PLAYLIST,
 	payload: singlePlaylist
 }));
+socket.on('invalidToken', d => console.log('Invalid Token', d));
 
 export default socket;

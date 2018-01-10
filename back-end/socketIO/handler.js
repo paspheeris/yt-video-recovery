@@ -64,9 +64,14 @@ function socketHandler(client) {
 
 	client.on('getDbCache', token => {
 		validateAccessToken(token).then(validationRes => {
-			const userObj = parseValidationRes(validationRes);
-			// console.log(userObj);
-			return getUser(userObj);
+			if(validationRes.error_description === 'Invalid Value') {
+				// Incorrect token, break off and send error to frontend
+				client.emit('invalidToken', validationRes);
+				return Promise.reject(validationRes);
+			} else {
+				const userObj = parseValidationRes(validationRes);
+				return getUser(userObj);
+			}
 		})
 			.then(user => client.emit('getDbCache', user))
 			.catch(error => console.log(error));
