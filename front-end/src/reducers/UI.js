@@ -1,8 +1,9 @@
 import {getPlId} from '../utils/yt.js';
 import {
-	DB_CACHED_USERS,
+	DB_CACHED_USER,
 	PL_METADATA,
-	SINGLE_PLAYLIST
+	SINGLE_PLAYLIST,
+	INIT_GET_DB_CACHE
     // SUCCESS,
     // FAILURE
 } from '.././actions/constants';
@@ -23,7 +24,17 @@ function UI(state ={}, action) {
 				playlistSpinners: state.playlistSpinners.filter(id => {
 					return id !== getPlId(action.payload);
 				})
-			}
+			};
+		case INIT_GET_DB_CACHE:
+			return {
+				...state,
+				gettingDbCache: true
+			};
+		case DB_CACHED_USER:
+			return {
+				...state,
+				gettingDbCache: false
+			};
     default:
     return state;
     }

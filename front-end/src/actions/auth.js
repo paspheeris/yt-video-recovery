@@ -1,5 +1,6 @@
 import {
-	SIGN_OUT
+	SIGN_OUT,
+	INIT_GET_DB_CACHE
 } from './constants';
 
 export const authActions = {
@@ -20,5 +21,10 @@ export function signOut() {
 	console.log('dispatching signOut');
 	return {
 		type: SIGN_OUT
+	}
+}
+export function initGetDbCache() {
+	return {
+		type: INIT_GET_DB_CACHE
 	}
 }

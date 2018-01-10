@@ -8,3 +8,5 @@ export const SIGN_OUT = 'SIGN_OUT';
 export const DB_CACHED_USER = 'DB_CACHED_USER';
 export const PL_METADATA = 'PL_METADATA';
 export const SINGLE_PLAYLIST = 'SINGLE_PLAYLIST ';
+export const INIT_GET_DB_CACHE = 'INIT_GET_DB_CACHE';
+

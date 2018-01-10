@@ -3,7 +3,7 @@ import socket from '.././actions/socket.js';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { parseHash } from '.././actions/auth';
+import { parseHash, initGetDbCache } from '.././actions/auth';
 import { Item, Container,
 				 Header, Message, Loader, Dimmer, Segment } from 'semantic-ui-react';
 import PlaylistItem from './PlaylistItem';
@@ -34,6 +34,7 @@ class Profile extends React.Component {
 			if(this.props.msSinceLastLogin < 1500) {
 				console.log('emiting getDbCache in Profile componentDidMount');
 				socket.emit('getDbCache', this.props.access_token);
+				this.props.initGetDbCache();
 			}
 			// Else, if it's the first login, or firtst in 12hrs, do a full req
 			else {
@@ -59,7 +60,7 @@ class Profile extends React.Component {
 						<p>You must be logged in to view your profile.</p>
 					</Message>
 				</Container>
-		)
+		);
 		return (
 			<Container>
 				{this.sessionIsExpired() &&
@@ -68,6 +69,8 @@ class Profile extends React.Component {
 						<p>Please login again to update your profile.</p>
 					</Message>
 				}
+					<Loader active={this.props.gettingDbCache}
+						inline>Fetching Your Playlists...</Loader>
 			<Header as='h2' >Your Playlists</Header>
 				<Item.Group divided>
 					{this.props.plsMetadata && this.props.plsMetadata.map(( pl, i ) => {
@@ -75,6 +78,8 @@ class Profile extends React.Component {
 																 showSpinner={this.showSpinner(pl.id)}/>
 					})}
 				</Item.Group>
+			{this.props.recoveredCount > 0 &&
+			 <div>
 			<Header as='h2' >Removed Videos</Header>
 			<Item.Group divided>
 				<Item as={Link} to='/playlist/recoveredTitles'
@@ -92,6 +97,8 @@ class Profile extends React.Component {
 						inline>Updating Playlist...</Loader>
 				</Item>
 			</Item.Group>
+			 </div>
+			}
 			<br />
 			</Container>
   )}
@@ -132,13 +139,15 @@ function mapStateToProps(state, ownProps) {
 		lastLogin: state.auth.lastLogin,
 		msSinceLastLogin: state.auth.msSinceLastLogin,
 		plSpinners: state.UI.playlistSpinners,
+		gettingDbCache: state.UI.gettingDbCache,
 		deletedCount,
 		recoveredCount
 	};
 }
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators({
-	parseHash,
+		parseHash,
+		initGetDbCache
 	}, dispatch);
 }
 
