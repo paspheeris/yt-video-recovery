@@ -1,8 +1,8 @@
 import React from 'react';
-import { Item } from 'semantic-ui-react';
+import { Item, Loader } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 
-function PlaylistItem({plMetadata}) {
+function PlaylistItem({plMetadata, showSpinner}) {
 	const { deletedCount } = plMetadata;
 	return (
 		<Item as={Link} to={`/playlist/${plMetadata.title}`}
@@ -20,6 +20,7 @@ function PlaylistItem({plMetadata}) {
 							<span>Recovered Titles: {plMetadata.recoveredCount}</span> }
 					</Item.Description>
 				</Item.Content>
+						<Loader active={showSpinner} inline>Updating Playlist...</Loader>
 			</Item>
 	)
 }

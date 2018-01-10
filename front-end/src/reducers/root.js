@@ -2,8 +2,8 @@
 import {combineReducers} from 'redux';
 import auth from './auth';
 import playlists from './playlists';
-import videos from './videos';
+import UI from './UI';
 
-const rootReducer= combineReducers({ auth, playlists, videos });
+const rootReducer= combineReducers({ auth, playlists, UI });
 
 export default rootReducer;

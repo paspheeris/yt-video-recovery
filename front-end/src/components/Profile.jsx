@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { parseHash } from '.././actions/auth';
 import { Item, Container,
-				 Header, Message } from 'semantic-ui-react';
+				 Header, Message, Loader, Dimmer, Segment } from 'semantic-ui-react';
 import PlaylistItem from './PlaylistItem';
 import {Link} from 'react-router-dom';
 import recycle from '../recycle.svg';
@@ -30,9 +30,8 @@ class Profile extends React.Component {
 			const { lastLogin } = this.props;
 			console.log('lastLogin', lastLogin);
 			// If the last login was within 12hrs, just fetch data cached in the DB
-			/* 43200000*/
-			/* 1500 */
-			if(this.props.msSinceLastLogin < 43200000 ) {
+			// 43200000
+			if(this.props.msSinceLastLogin < 1500) {
 				console.log('emiting getDbCache in Profile componentDidMount');
 				socket.emit('getDbCache', this.props.access_token);
 			}
@@ -63,8 +62,6 @@ class Profile extends React.Component {
 		)
 		return (
 			<Container>
-				Hello from the Profile
-				<button onClick={this.getDbCache}>getDbCache</button>
 				{this.sessionIsExpired() &&
 					<Message warning>
 						<Message.Header>Session Expired.</Message.Header>
@@ -74,7 +71,8 @@ class Profile extends React.Component {
 			<Header as='h2' >Your Playlists</Header>
 				<Item.Group divided>
 					{this.props.plsMetadata && this.props.plsMetadata.map(( pl, i ) => {
-						return <PlaylistItem key={i} plMetadata={pl} />
+						return <PlaylistItem key={i} plMetadata={pl}
+																 showSpinner={this.showSpinner(pl.id)}/>
 					})}
 				</Item.Group>
 			<Header as='h2' >Removed Videos</Header>
@@ -90,12 +88,21 @@ class Profile extends React.Component {
 							<span>Recovered Titles: {this.props.recoveredCount}</span>
 						</Item.Description>
 					</Item.Content>
+					<Loader active={this.showSpinner('allRecovered')}
+						inline>Updating Playlist...</Loader>
 				</Item>
 			</Item.Group>
 			<br />
 			</Container>
   )}
-
+	showSpinner = plId => {
+		if(this.props.plSpinners === undefined) return false;
+		const { plSpinners } = this.props;
+		if (plId === 'allRecovered') {
+			return plSpinners.length > 0;
+		}
+		return plSpinners.includes(plId);
+	}
 	getDbCache = _ => {
 		socket.emit('getDbCache', this.props.access_token);
 	}
@@ -124,6 +131,7 @@ function mapStateToProps(state, ownProps) {
 		expiresAt: state.auth.expires_at,
 		lastLogin: state.auth.lastLogin,
 		msSinceLastLogin: state.auth.msSinceLastLogin,
+		plSpinners: state.UI.playlistSpinners,
 		deletedCount,
 		recoveredCount
 	};
