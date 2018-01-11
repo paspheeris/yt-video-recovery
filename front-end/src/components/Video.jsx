@@ -37,7 +37,9 @@ class Video extends React.Component {
 	} else if (hasRecoveredTitle(video)) {
 		// Removed video, but one for which a title was recovered
 		const title = video.archive.title;
-		if(title === null) console.log(video);
+		if(title === null || title === undefined) {
+			return false;
+		}
 		const titleNoSpaces = title.split(' ').join('+');
 		const ytSearchLink =
 			`https://www.youtube.com/results?search_query=${titleNoSpaces}`;

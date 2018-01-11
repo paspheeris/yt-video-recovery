@@ -61,6 +61,14 @@ class Profile extends React.Component {
 					</Message>
 				</Container>
 		);
+			else if (this.props.noFoundPlaylistsError) return (
+				<Container>
+					<Message warning>
+						<Message.Header>No playlists found.</Message.Header>
+						<p>Are you sure that you logged in with the correct account?</p>
+					</Message>
+				</Container>
+		);
 		return (
 			<Container>
 				{this.sessionIsExpired() &&
@@ -140,6 +148,7 @@ function mapStateToProps(state, ownProps) {
 		msSinceLastLogin: state.auth.msSinceLastLogin,
 		plSpinners: state.UI.playlistSpinners,
 		gettingDbCache: state.UI.gettingDbCache,
+		noFoundPlaylistsError: state.UI.noFoundPlaylistsError,
 		deletedCount,
 		recoveredCount
 	};

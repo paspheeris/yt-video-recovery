@@ -1,5 +1,11 @@
 const scope = 'https://www.googleapis.com/auth/youtube';
-const redirectURI = 'https://localhost:3000/profile';
+// const redirectURI = 'https://localhost:7777/profile';
+// const redirectURI = 'https://boiling-atoll-21824.herokuapp.com/profile';
+const redirectURI = process.env && process.env.NODE_ENV === 'development'
+			? 'https://localhost:7777/profile'
+			: 'https://boiling-atoll-21824.herokuapp.com/profile';
+
+
 const clientID = '473384173845-k0go9oir9g6qsto4tmugfl8l5fcgvpc3.apps.googleusercontent.com';
 
 export function parseAuthHash(hash) {

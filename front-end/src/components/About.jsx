@@ -31,7 +31,7 @@ const About = () => {
 				uses <a href='https://en.wikipedia.org/wiki/OAuth' target='_blank'
 						 rel="noopener noreferrer">
 					OAuth
-				</a> to acess your YouTube account data. This has two advantages:
+				</a> to access your YouTube account data. This has two advantages:
 				First, there's no need to register for an account, come up with a
 				username and password, etc. Second, because all authentication is done
 				through YouTube itself, and this site never sees your password, you can

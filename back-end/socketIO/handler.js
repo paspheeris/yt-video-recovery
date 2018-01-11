@@ -73,11 +73,23 @@ function socketHandler(client) {
 				return getUser(userObj);
 			}
 		})
-			.then(user => client.emit('getDbCache', user))
+			.then(user => {
+				if(!user.playlists || user.playlists.length === 0) {
+					// A getDbCache shouldn't normally be dispatched from the front end
+					// for a user that doesn't already have videos cached in the DB, but
+					// this can happen in the case of someone logging in with a YT 
+					// account that doesn't actually have any videos saved, or multiple
+					// people using the site from the same computer
+					console.log('cache error, doing initial login instead');
+					client.emit('cacheError');
+					initialLoginHandler(token, client);
+				} else client.emit('getDbCache', user);
+			})
 			.catch(error => console.log(error));
 	});
-
-	client.on('initialLogin', token => {
+	client.on('initialLogin', token => initialLoginHandler(token, client));
+}
+function initialLoginHandler(token, client) {
 		const allPlaylists = getPlaylists(token);
 		allPlaylists.then(plMetadata => {
 		});
@@ -92,6 +104,10 @@ function socketHandler(client) {
 		const playlistsWithAllVids = Promise.all([allPlaylists, validatedUser])
 				.then(([playlistRes, user]) => {
 				const playlistObjs = parsePlaylistRes(playlistRes);
+					if(playlistObjs.length === 0) {
+						client.emit('noFoundPlaylists');
+						return Promise.reject(new Error('noFoundPlaylists'));
+					}
 				// Dispatch PL metadata to the front end, for display in Profile
 				client.emit('plMetadata', playlistObjs);
 					// Then save the metadata in the DB
@@ -99,18 +115,24 @@ function socketHandler(client) {
 				// Just look at the CS PL for now
 				// const filtered = playlistObjs.filter(pl => pl.id === 'PL48F29CBD223B33BC');
 				const filtered = playlistObjs.filter(pl => pl.id !== 'FLnhPe1QlSHSS81GTB-YoZXA');
-				const promiseArr = filtered.map(playlistObj => {
-				// const promiseArr = playlistObjs.map(playlistObj => {
+				// const promiseArr = filtered.map(playlistObj => {
+				const promiseArr = playlistObjs.map(playlistObj => {
 					return fetchAllVideos(token, playlistObj.id, undefined, []);
 				});
 				// return Promise.all(promiseArr);
 				return promiseArr;
 			})
-			.catch(error => console.log(error));
+					.catch(error => {
+						console.log(error);
+						return error;
+					});
 
 		const allVidsWithArchiveStatus = Promise.all(
 			[playlistsWithAllVids, userInDb])
 					.then(( [ plsWithAllVids, userInDb ] ) => {
+				if(plsWithAllVids instanceof Error) {
+					return Promise.reject(plsWithAllVids);
+				}
 				return plsWithAllVids.map(plPromise => {
 					return plPromise.then(pl => {
 						// client.emit('pleasePrint', pl);
@@ -153,9 +175,15 @@ function socketHandler(client) {
 					})
 				});
 			})
-			.catch(error => console.log(error));
+					.catch(error => {
+						console.log(error);
+						return error;
+					});
 
 		const allVidsWithDeletedTitles = allVidsWithArchiveStatus.then(pls => {
+			if(pls instanceof Error) {
+				return Promise.reject(pls);
+			}
 			return pls.map(plPromise => {
 				return plPromise.then(pl => {
 					// client.emit('pleasePrint', pl);
@@ -183,12 +211,18 @@ function socketHandler(client) {
 				})
 			});
 		})
-					.catch(error => console.log(error));
+					.catch(error => {
+						console.log(error);
+								 return error;
+					});
 
 
 		// Send data to the front end as it resolves per PL
 		Promise.all([allVidsWithDeletedTitles, validatedUser]).then(
 			( [ plsPromise, validationRes ] ) => {
+				if(plsPromise instanceof Error) {
+					return Promise.reject(plsPromise);
+				}
 				const userObj = parseValidationRes(validationRes);
 				client.emit('pleasePrint', userObj);
 				plsPromise.forEach(plPromise => {
@@ -202,11 +236,17 @@ function socketHandler(client) {
 						})
 				})
 		})
-			.catch(error => console.log(error));
+		.catch(error => {
+			console.log(error);
+			client.emit(error.name);
+		});
 
 		// Wait for all the PLs to resolve before saving in the DB
 		Promise.all([allVidsWithDeletedTitles, userInDb]).then(
 			([ plsPromise, user ]) => {
+				if(plsPromise instanceof Error) {
+					return Promise.reject(plsPromise);
+				}
 				const resolvedPls = Promise.all(plsPromise.map(plPromise => {
 					return plPromise.then(vidsPromises => Promise.all(vidsPromises));
 				}));
@@ -222,8 +262,6 @@ function socketHandler(client) {
 				updateUserPls(user.email, pls);
 			})
 			.catch(error => console.log(error));
-
-	});
 }
 module.exports = {
 	socketHandler

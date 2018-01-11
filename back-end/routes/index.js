@@ -4,10 +4,13 @@ const fetch = require('node-fetch');
 var {io} = require('.././bin/www');
 // var io = require('socket.io')(server);
 
+// router.get('/', function (req, res, next) {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+// router.get('/', function(req, res, next) {
+//   res.render('index', { title: 'Express' });
+// });
 const tempToken = `ya29.Gl0cBZ_FePpLi7v_UtAgYi0T9zKsCkLMjtwR-wyPtFz_EwbF1zPs-FabliqOT4l9ZT7S7ABfib0wXE15O939l-8Ep2zDQ-wsGg_sdzgfqisSd41dpV83IwmmL99En5E`;
 // router.get('/home', function(req, res, next) {
 //     res.sendFile('index');

@@ -25,7 +25,10 @@ function getPlaylists(accessToken) {
         .catch(error => console.log(error));
 }
 function parsePlaylistRes(playlistRes) {
-    // console.log('playlistRes in parsePlaylistRes:', playlistRes);
+	if(!playlistRes.items) {
+		// User doesn't have any playlists; return an empty array and show errors
+		return [];
+	}
     return playlistRes.items.map(playlist => {
         // console.log(playlist.snippet);
         return {

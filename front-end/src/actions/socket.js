@@ -4,11 +4,15 @@ import store from '../store';
 import {
 	DB_CACHED_USER,
 	PL_METADATA,
-	SINGLE_PLAYLIST
+	SINGLE_PLAYLIST,
+	NO_FOUND_PLAYLISTS
 } from './constants';
 
 
-const socket = io('https://localhost:7777');
+// const socket = io('https://localhost:7777');
+const socket = process.env && process.env.NODE_ENV === 'development'
+			? io('https://localhost:7777')
+			: io('https://boiling-atoll-21824.herokuapp.com/');
 
 socket.on('connect', function(){
     console.log('connected ont he front end in socket.js');
@@ -29,5 +33,6 @@ socket.on('singlePlaylist', singlePlaylist => store.dispatch({
 	payload: singlePlaylist
 }));
 socket.on('invalidToken', d => console.log('Invalid Token', d));
+socket.on('noFoundPlaylists', d => store.dispatch({type: NO_FOUND_PLAYLISTS}));
 
 export default socket;

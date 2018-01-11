@@ -28,7 +28,7 @@ app.set('port', port);
  * In development, this will be a HTTPS server.
  */
 
-if(process.env.DEVELOPMENT === 'TRUE') {
+if(process.env.NODE_ENV === 'development') {
     console.log('in dev if');
     // Create HTTPS server
     const sslOptions = {

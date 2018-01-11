@@ -3,7 +3,8 @@ import {
 	DB_CACHED_USER,
 	PL_METADATA,
 	SINGLE_PLAYLIST,
-	INIT_GET_DB_CACHE
+	INIT_GET_DB_CACHE,
+	NO_FOUND_PLAYLISTS
     // SUCCESS,
     // FAILURE
 } from '.././actions/constants';
@@ -35,8 +36,18 @@ function UI(state ={}, action) {
 				...state,
 				gettingDbCache: false
 			};
+		case NO_FOUND_PLAYLISTS:
+			return {
+				...state,
+				playlistSpinners: [],
+				gettingDbCache: false,
+				noFoundPlaylistsError: true
+			};
     default:
-    return state;
+			return {
+				...state,
+				noFoundPlaylistsError: false
+			};
     }
 }
 
