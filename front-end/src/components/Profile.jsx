@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { parseHash, initGetDbCache } from '.././actions/auth';
 import { Item, Container,
-				 Header, Message, Loader, Dimmer, Segment } from 'semantic-ui-react';
+				 Header, Message, Loader } from 'semantic-ui-react';
 import PlaylistItem from './PlaylistItem';
 import {Link} from 'react-router-dom';
 import recycle from '../recycle.svg';
@@ -27,18 +27,15 @@ class Profile extends React.Component {
 	componentDidUpdate(prevProps, prevState) {
 		// Perform fetches to the backend once the access token comes through
 		if (!prevProps.access_token && this.props.access_token) {
-			const { lastLogin } = this.props;
-			console.log('lastLogin', lastLogin);
+			/* const { lastLogin } = this.props;*/
 			// If the last login was within 12hrs, just fetch data cached in the DB
-			// 43200000
-			if(this.props.msSinceLastLogin < 1500) {
-				console.log('emiting getDbCache in Profile componentDidMount');
+			// 
+			if(this.props.msSinceLastLogin < 43200000) {
 				socket.emit('getDbCache', this.props.access_token);
 				this.props.initGetDbCache();
 			}
 			// Else, if it's the first login, or firtst in 12hrs, do a full req
 			else {
-				console.log('emitting initialLogin in Profile componentDidMount');
 				socket.emit('initialLogin', this.props.access_token);
 			}
 			}

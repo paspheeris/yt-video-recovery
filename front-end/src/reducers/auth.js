@@ -12,8 +12,6 @@ import {
 function users(state = {lastLogin: 0}, action) {
     switch (action.type) {
         case authActions.PARSE_HASH:
-            console.log(action.payload);
-            //console.log(parseAuthHash(action.payload.hash));
             const {
                 rawHash,
                 access_token,

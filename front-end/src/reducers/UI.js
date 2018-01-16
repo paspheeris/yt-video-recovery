@@ -18,7 +18,6 @@ function UI(state ={}, action) {
 				...state,
 				playlistSpinners: plIds
 			};
-			break;
 		case SINGLE_PLAYLIST:
 			return {
 				...state,

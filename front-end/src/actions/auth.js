@@ -18,7 +18,6 @@ export function parseHash(hash, timeReceived) {
     };
 }
 export function signOut() {
-	console.log('dispatching signOut');
 	return {
 		type: SIGN_OUT
 	}

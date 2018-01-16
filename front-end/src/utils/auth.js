@@ -1,8 +1,6 @@
-const scope = 'https://www.googleapis.com/auth/youtube';
-// const redirectURI = 'https://localhost:7777/profile';
-// const redirectURI = 'https://boiling-atoll-21824.herokuapp.com/profile';
+const scope = 'https://www.googleapis.com/auth/youtube.readonly';
 const redirectURI = process.env && process.env.NODE_ENV === 'development'
-			? 'https://localhost:7777/profile'
+			? 'https://localhost:3000/profile'
 			: 'https://boiling-atoll-21824.herokuapp.com/profile';
 
 

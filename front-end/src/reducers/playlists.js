@@ -15,7 +15,6 @@ import {
 function playlists(state = {}, action) {
     switch (action.type) {
         case (GET_PLAYLISTS + SUCCESS):
-        // console.log(extractPlaylistsInfo(action.payload));
         const summaries = extractPlaylistsInfo(action.payload);
         return {
             ...state,
@@ -37,8 +36,6 @@ function playlists(state = {}, action) {
             })
         };
 			case DB_CACHED_USER:
-				console.log('case DB_CACHED_USER', action);
-				// return action.payload.playlists;
 			const metadata = action.payload.playlistsMetadata.map( plMeta  => {
 				// Find the corresponding list of videos
 				const matchingPl = action.payload.playlists.find(pl => {
@@ -62,7 +59,6 @@ function playlists(state = {}, action) {
 				metadata
 			};
 		case PL_METADATA:
-			// console.log('PL_METADATA in reducer', action);
 			// Not doing deleted/recovered count here for now, as they'll be set
 			// as the individual PLs come in
 			return {
@@ -70,7 +66,6 @@ function playlists(state = {}, action) {
 				metadata: action.payload
 			};
 		case SINGLE_PLAYLIST:
-			console.log('SINGLE_PLAYLIST in reducer', action);
 			const newPlaylist = action.payload;
 			const newPlId = getPlId(newPlaylist);
 			if (!state.videos || state.videos.length === 0) {
